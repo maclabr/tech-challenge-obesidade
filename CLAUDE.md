@@ -108,6 +108,12 @@ com um título em markdown:
 - Salvar modelo + pipeline de pré-processamento juntos com `joblib`.
 - Validar modelos com validação cruzada estratificada e reportar accuracy,
   F1-macro e matriz de confusão — nunca só accuracy, por ser problema multiclasse.
+- Lógica de limpeza e feature engineering decidida em notebook (remoção de
+  duplicatas, arredondamentos, novas features) deve ser extraída para funções
+  em `src/` assim que estabilizada; notebooks devem importar e chamar essas
+  funções em vez de reimplementar a lógica inline.
+- Colunas com prefixo `fl_` (flags binárias) devem ser convertidas para 1/0
+  logo na leitura dos dados, nunca mantidas como texto (`yes`/`no`).
 
 ## Estrutura do repositório
 - data/raw: dado original, nunca sobrescrever
