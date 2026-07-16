@@ -119,8 +119,8 @@ com um título em markdown:
   outra transformação — nunca renomear ou limpar antes de validar.
 
 ## Estrutura do repositório
-- data/raw: dado original, nunca sobrescrever
-- data/processed: dados tratados
+- data/bronze: dado original, nunca sobrescrever
+- data/silver: dados tratados (camada silver, pronta para a modelagem)
 - notebooks: exploração (EDA) e testes de modelagem
 - src: código reutilizável (pipeline de pré-processamento, treino, avaliação)
 - app: aplicação Streamlit do modelo preditivo
