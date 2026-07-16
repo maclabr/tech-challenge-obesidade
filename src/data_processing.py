@@ -1,14 +1,94 @@
 """Funções de leitura e tratamento de dados do projeto de previsão de obesidade."""
 
 import pandas as pd
+import pandera.pandas as pa
+from pandera.pandas import Check, Column, DataFrameSchema
 
 VALORES_FLAG_BINARIA = {"yes": 1, "no": 0}
+
+SCHEMA_DADOS_BRUTOS = DataFrameSchema(
+    {
+        "Gender": Column(str, Check.isin(["Female", "Male"]), nullable=False),
+        "Age": Column(float, Check.in_range(1, 120), nullable=False),
+        "Height": Column(float, Check.in_range(0.5, 2.5), nullable=False),
+        "Weight": Column(float, Check.in_range(2, 300), nullable=False),
+        "family_history": Column(str, Check.isin(["yes", "no"]), nullable=False),
+        "FAVC": Column(str, Check.isin(["yes", "no"]), nullable=False),
+        "FCVC": Column(float, Check.in_range(1, 3), nullable=False),
+        "NCP": Column(float, Check.in_range(1, 4), nullable=False),
+        "CAEC": Column(str, Check.isin(["no", "Sometimes", "Frequently", "Always"]), nullable=False),
+        "SMOKE": Column(str, Check.isin(["yes", "no"]), nullable=False),
+        "CH2O": Column(float, Check.in_range(1, 3), nullable=False),
+        "SCC": Column(str, Check.isin(["yes", "no"]), nullable=False),
+        "FAF": Column(float, Check.in_range(0, 3), nullable=False),
+        "TUE": Column(float, Check.in_range(0, 2), nullable=False),
+        "CALC": Column(str, Check.isin(["no", "Sometimes", "Frequently", "Always"]), nullable=False),
+        "MTRANS": Column(
+            str, Check.isin(["Automobile", "Motorbike", "Bike", "Public_Transportation", "Walking"]), nullable=False
+        ),
+        "Obesity": Column(
+            str,
+            Check.isin(
+                [
+                    "Insufficient_Weight",
+                    "Normal_Weight",
+                    "Overweight_Level_I",
+                    "Overweight_Level_II",
+                    "Obesity_Type_I",
+                    "Obesity_Type_II",
+                    "Obesity_Type_III",
+                ]
+            ),
+            nullable=False,
+        ),
+    },
+    strict=True,
+    coerce=False,
+)
+
+
+def validar_dados_brutos(dados: pd.DataFrame) -> pd.DataFrame:
+    """
+    Valida os dados exatamente como chegam da fonte, com os nomes de coluna
+    originais (antes de qualquer rename), contra `SCHEMA_DADOS_BRUTOS`: as 17
+    colunas do obesity.csv devem estar presentes (nenhuma faltando, nenhuma
+    inesperada), com o tipo, a faixa plausível (numéricas/ordinais) ou o
+    conjunto de categorias válidas (categóricas) esperados, e sem nulos. Não
+    verifica duplicatas — isso é responsabilidade de `remover_duplicatas_exatas`.
+
+    Deve ser chamada como primeiro passo de `carregar_dados_brutos`, antes do
+    rename de colunas.
+
+    Parâmetros
+    ----------
+    dados : pd.DataFrame
+        Dados brutos recém-lidos do CSV, com os nomes de coluna originais
+        (Gender, Age, Height, ...).
+
+    Retorno
+    -------
+    pd.DataFrame
+        O mesmo DataFrame de entrada, inalterado, caso a validação passe.
+
+    Levanta
+    -------
+    pandera.errors.SchemaErrors
+        Se qualquer coluna estiver faltando, houver coluna inesperada, tipo
+        incompatível, valor fora da faixa esperada, categoria inválida ou
+        valor nulo. A exceção lista, para cada problema, a coluna e o motivo
+        da falha (`error.failure_cases`), interrompendo o pipeline em vez de
+        seguir silenciosamente com dado inválido.
+    """
+    SCHEMA_DADOS_BRUTOS.validate(dados, lazy=True)
+    return dados
 
 
 def carregar_dados_brutos(caminho_arquivo: str, mapa_renomeacao_colunas: dict) -> pd.DataFrame:
     """
-    Lê o CSV de dados brutos e renomeia as colunas para os nomes descritivos
-    do projeto (prefixos cd_, ds_, fl_ e nr_), conforme `mapa_renomeacao_colunas`.
+    Lê o CSV de dados brutos, valida seu schema (via `validar_dados_brutos`,
+    ainda com os nomes de coluna originais) e só então renomeia as colunas
+    para os nomes descritivos do projeto (prefixos cd_, ds_, fl_ e nr_),
+    conforme `mapa_renomeacao_colunas`.
 
     Parâmetros
     ----------
@@ -20,9 +100,11 @@ def carregar_dados_brutos(caminho_arquivo: str, mapa_renomeacao_colunas: dict) -
     Retorno
     -------
     pd.DataFrame
-        Dados brutos com as colunas renomeadas.
+        Dados brutos validados, com as colunas renomeadas.
     """
-    return pd.read_csv(caminho_arquivo).rename(columns=mapa_renomeacao_colunas)
+    dados_brutos = pd.read_csv(caminho_arquivo)
+    validar_dados_brutos(dados_brutos)
+    return dados_brutos.rename(columns=mapa_renomeacao_colunas)
 
 
 def converter_flags_binarias(dados: pd.DataFrame) -> pd.DataFrame:
