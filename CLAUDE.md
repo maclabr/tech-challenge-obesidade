@@ -114,6 +114,9 @@ com um título em markdown:
   funções em vez de reimplementar a lógica inline.
 - Colunas com prefixo `fl_` (flags binárias) devem ser convertidas para 1/0
   logo na leitura dos dados, nunca mantidas como texto (`yes`/`no`).
+- Todo carregamento de dado bruto novo deve passar por `validar_dados_brutos`
+  (schema, tipos, faixas e categorias válidas, via pandera) antes de qualquer
+  outra transformação — nunca renomear ou limpar antes de validar.
 
 ## Estrutura do repositório
 - data/raw: dado original, nunca sobrescrever
