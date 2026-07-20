@@ -17,7 +17,7 @@ Prazo de entrega: 28/07/2026. Projeto em grupo.
 - Vídeo de 4–10 min apresentando a estratégia e o sistema em visão de negócio.
 
 ## Dataset e dicionário de dados
-Arquivo: `data/raw/obesity.csv`.
+Arquivo: `data/bronze/Obesity.csv`.
 
 Atenção — confirmar sempre com `df.columns` antes de referenciar estas colunas no
 código, pois há divergência entre as fontes do desafio:
