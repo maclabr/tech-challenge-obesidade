@@ -72,11 +72,11 @@ COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL = [
 # =============================================================================
 
 COLUNAS_ORDINAIS = [
-    "cd_consumo_vegetais",
-    "cd_numero_refeicoes",
+    "cd_consumo_de_vegetais",
+    "cd_numero_refeicoes_principais",
     "cd_consumo_agua",
-    "cd_atividade_fisica",
-    "cd_tempo_telas",
+    "cd_frequencia_atividade_fisica",
+    "cd_tempo_uso_eletronicos",
 ]
 
 # =============================================================================
