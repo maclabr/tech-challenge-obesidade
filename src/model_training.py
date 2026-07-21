@@ -67,6 +67,69 @@ COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL = [
     "nr_imc",
 ]
 
+
+def criar_cenarios_modelagem(
+    X: pd.DataFrame,
+) -> Dict[str, pd.DataFrame]:
+    """
+    Cria os cenários de modelagem utilizados no Tech Challenge.
+
+    Como o rótulo do dataset é originalmente derivado de fórmulas de IMC
+    (peso/altura²), as variáveis Height e Weight quase determinam o
+    target sozinhas. Para permitir uma leitura honesta da capacidade
+    preditiva dos hábitos alimentares e de atividade física, dois
+    cenários são avaliados:
+
+    - "referencia": utiliza todos os atributos disponíveis, incluindo
+      altura, peso e IMC;
+    - "comportamental": remove as colunas listadas em
+      ``COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL``, restando apenas
+      hábitos e dados comportamentais.
+
+    Parameters
+    ----------
+    X : pd.DataFrame
+        Conjunto de atributos preditores.
+
+    Returns
+    -------
+    Dict[str, pd.DataFrame]
+        Dicionário contendo os dois cenários de modelagem:
+
+        - "referencia": X completo;
+        - "comportamental": X sem as colunas antropométricas.
+
+    Raises
+    ------
+    ValueError
+        Caso alguma coluna de ``COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL``
+        não exista em X.
+    """
+
+    colunas_ausentes = [
+        coluna
+        for coluna in COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL
+        if coluna not in X.columns
+    ]
+
+    if colunas_ausentes:
+        raise ValueError(
+            "As seguintes colunas não foram encontradas em X: "
+            f"{colunas_ausentes}"
+        )
+
+    referencia = X.copy()
+
+    comportamental = X.drop(
+        columns=COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL
+    ).copy()
+
+    return {
+        "referencia": referencia,
+        "comportamental": comportamental,
+    }
+
+
 # =============================================================================
 # Variáveis ordinais
 # =============================================================================

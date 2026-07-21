@@ -30,7 +30,9 @@ sys.path.append(
 from sklearn.linear_model import LogisticRegression
 
 from src.model_training import (
+    COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL,
     carregar_dados_silver,
+    criar_cenarios_modelagem,
     criar_pipeline,
     criar_preprocessador,
     dividir_treino_teste,
@@ -340,6 +342,69 @@ def main():
     )
 
     print("✓ Modelo treinado e pronto para predição.")
+
+    # =====================================================================
+    # Validação 7 - Criação dos cenários de modelagem
+    # =====================================================================
+
+    cenarios = criar_cenarios_modelagem(X)
+
+    print("\n✓ Cenários de modelagem criados com sucesso.")
+
+    print(f"  Cenários gerados: {list(cenarios.keys())}")
+
+    if set(cenarios.keys()) != {"referencia", "comportamental"}:
+        raise ValueError(
+            "Os cenários de modelagem devem ser exatamente "
+            "'referencia' e 'comportamental'."
+        )
+
+    referencia = cenarios["referencia"]
+    comportamental = cenarios["comportamental"]
+
+    print(f"  referencia     : {referencia.shape}")
+    print(f"  comportamental : {comportamental.shape}")
+
+    if referencia.shape[0] != X.shape[0]:
+        raise ValueError(
+            "O cenário 'referencia' não possui o mesmo número de "
+            "registros que X."
+        )
+
+    if comportamental.shape[0] != X.shape[0]:
+        raise ValueError(
+            "O cenário 'comportamental' não possui o mesmo número de "
+            "registros que X."
+        )
+
+    print("✓ Ambos os cenários preservam o número de registros de X.")
+
+    colunas_vazadas = [
+        coluna
+        for coluna in COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL
+        if coluna in comportamental.columns
+    ]
+
+    if colunas_vazadas:
+        raise ValueError(
+            "O cenário 'comportamental' não deveria conter as colunas "
+            f"{colunas_vazadas}."
+        )
+
+    print(
+        "✓ O cenário 'comportamental' não contém "
+        f"{COLUNAS_EXCLUIR_MODELO_COMPORTAMENTAL}."
+    )
+
+    colunas_faltantes_referencia = set(X.columns) - set(referencia.columns)
+
+    if colunas_faltantes_referencia:
+        raise ValueError(
+            "O cenário 'referencia' está sem as colunas "
+            f"{sorted(colunas_faltantes_referencia)}."
+        )
+
+    print("✓ O cenário 'referencia' contém todas as colunas originais.")
 
     print(SEPARADOR)
     print("Todas as validações foram concluídas com sucesso.")
