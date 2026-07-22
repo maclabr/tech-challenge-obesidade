@@ -12,7 +12,11 @@ Responsabilidades
 - dividir dados em treino e teste;
 - identificar automaticamente os grupos de variáveis;
 - construir o pré-processador;
-- construir pipelines de Machine Learning.
+- construir pipelines de Machine Learning;
+- centralizar as constantes de configuração compartilhadas do projeto
+  (RANDOM_STATE, TEST_SIZE, TARGET, ORDEM_NIVEIS_OBESIDADE, N_SPLITS_CV,
+  META_ACCURACY) — decisão deliberada de manter tudo em um único lugar
+  em vez de fragmentar a configuração em múltiplos módulos.
 
 Este módulo não executa experimentos nem compara algoritmos.
 Essas atividades pertencem aos notebooks de modelagem.
@@ -55,6 +59,10 @@ ORDEM_NIVEIS_OBESIDADE = [
     "Obesity_Type_II",
     "Obesity_Type_III",
 ]
+
+N_SPLITS_CV = 5
+
+META_ACCURACY = 0.75
 
 # =============================================================================
 # Caminhos do projeto

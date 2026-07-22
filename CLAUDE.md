@@ -160,3 +160,5 @@ integrar. Setup completo de ambiente para o grupo está documentado à parte
   decidir entre usar o cenário referência para cumprir a meta numérica ou
   investir em mais engenharia de atributos — decisão de negócio, não
   técnica.
+
+  Configurações compartilhadas: RANDOM_STATE, TEST_SIZE, TARGET, ORDEM_NIVEIS_OBESIDADE, N_SPLITS_CV e META_ACCURACY ficam centralizadas em src/model_training.py — decisão deliberada de manter em um único módulo em vez de criar src/config.py separado.
