@@ -111,7 +111,10 @@ com um título em markdown:
 - Lógica de limpeza e feature engineering decidida em notebook (remoção de
   duplicatas, arredondamentos, novas features) deve ser extraída para funções
   em `src/` assim que estabilizada; notebooks devem importar e chamar essas
-  funções em vez de reimplementar a lógica inline.
+  funções em vez de reimplementar a lógica inline. A mesma regra vale para
+  constantes compartilhadas entre notebooks (ordem de categorias, metas,
+  nomes de colunas): devem viver em um único lugar em `src/` e ser
+  importadas, nunca redefinidas localmente em mais de um notebook.
 - Colunas com prefixo `fl_` (flags binárias) devem ser convertidas para 1/0
   logo na leitura dos dados, nunca mantidas como texto (`yes`/`no`).
 - Todo carregamento de dado bruto novo deve passar por `validar_dados_brutos`
@@ -126,6 +129,8 @@ com um título em markdown:
 - app: aplicação Streamlit do modelo preditivo
 - dashboard: painel analítico de insights
 - docs: documentação de apoio
+- tests: scripts de validação dos módulos de src/ antes de uso em
+  experimentos (ex.: validar_model_training.py)
 
 ## Ambiente
 - Python 3.11+, ambiente virtual em `venv/`
@@ -141,3 +146,17 @@ categóricas`, `fix: corrige split estratificado`, `chore: atualiza requirements
 Projeto em grupo, uma branch por tarefa, Pull Request para a main antes de
 integrar. Setup completo de ambiente para o grupo está documentado à parte
 (guia de setup compartilhado com as colegas).
+
+## Status da modelagem
+- Baseline (03_modelo_baseline.ipynb): Regressão Logística.
+- Cenário `referencia` (com métricas corporais): ~92% de acurácia no teste
+    — teto de performance / checagem de sanidade, não é candidato a
+    produção (reaprende a fórmula do IMC).
+- Cenário `comportamental` (sem métricas corporais): ~62% de acurácia no
+    teste — ainda abaixo da meta de 75% do desafio.
+- Próximo passo (04_comparacao_modelos.ipynb): testar algoritmos mais
+  robustos (Random Forest, Gradient Boosting, XGBoost/LightGBM) no cenário
+  comportamental, buscando fechar a distância até 75%. Se não fechar,
+  decidir entre usar o cenário referência para cumprir a meta numérica ou
+  investir em mais engenharia de atributos — decisão de negócio, não
+  técnica.
