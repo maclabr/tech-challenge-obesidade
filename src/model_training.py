@@ -46,6 +46,16 @@ TEST_SIZE = 0.2
 
 TARGET = "ds_nivel_obesidade"
 
+ORDEM_NIVEIS_OBESIDADE = [
+    "Insufficient_Weight",
+    "Normal_Weight",
+    "Overweight_Level_I",
+    "Overweight_Level_II",
+    "Obesity_Type_I",
+    "Obesity_Type_II",
+    "Obesity_Type_III",
+]
+
 # =============================================================================
 # Caminhos do projeto
 # =============================================================================
