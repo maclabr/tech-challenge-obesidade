@@ -66,9 +66,12 @@ em markdown — não tratar como uma escolha neutra.
 11. Monitoramento: fora do escopo obrigatório deste Tech Challenge, mas mencionar como próximo passo na conclusão/vídeo, se fizer sentido.
 12. Documentação e boas práticas: markdown explicativo, storytelling, funções reutilizáveis, nomes claros, reprodutibilidade, README.
 
-## Estrutura de notebooks (storytelling)
-Todo notebook de EDA ou modelagem deve seguir esta ordem de seções, cada uma
-com um título em markdown:
+  ## Estrutura de notebooks (storytelling)
+Todo notebook deve contar sua história em markdown antes de cada bloco de código
+(o quê e por quê), mas a lista de seções varia por tipo de notebook — não faz
+sentido forçar seções de EDA/limpeza num notebook que só faz modelagem.
+
+Notebooks de EDA (ex.: 01_eda.ipynb) seguem as 10 seções clássicas:
 1. Objetivo do projeto/notebook
 2. Importação das bibliotecas
 3. Configurações iniciais
@@ -78,6 +81,20 @@ com um título em markdown:
 7. Engenharia de atributos
 8. Modelagem
 9. Avaliação
+10. Conclusões
+
+Notebooks de modelagem (ex.: 02_modelagem.ipynb) usam uma estrutura mais enxuta,
+sem repetir carregamento de dados ou definição de cenários mais de uma vez:
+1. Objetivo
+2. Importações
+3. Configurações iniciais
+4. Carregamento dos dados (uma única vez)
+5. Preparação para modelagem (X/y, cenários de modelagem)
+6. Definição dos modelos
+7. Comparação (validação cruzada + teste, via src/model_comparison.py)
+8. Ranking e checagem da meta de acurácia
+9. Diagnóstico do melhor modelo por cenário (classification_report, matriz de
+   confusão, checagem de overfitting)
 10. Conclusões
 
 ## Boas práticas de código
@@ -147,18 +164,23 @@ Projeto em grupo, uma branch por tarefa, Pull Request para a main antes de
 integrar. Setup completo de ambiente para o grupo está documentado à parte
 (guia de setup compartilhado com as colegas).
 
-## Status da modelagem
-- Baseline (03_modelo_baseline.ipynb): Regressão Logística.
-- Cenário `referencia` (com métricas corporais): ~92% de acurácia no teste
-    — teto de performance / checagem de sanidade, não é candidato a
-    produção (reaprende a fórmula do IMC).
-- Cenário `comportamental` (sem métricas corporais): ~62% de acurácia no
-    teste — ainda abaixo da meta de 75% do desafio.
-- Próximo passo (04_comparacao_modelos.ipynb): testar algoritmos mais
-  robustos (Random Forest, Gradient Boosting, XGBoost/LightGBM) no cenário
-  comportamental, buscando fechar a distância até 75%. Se não fechar,
-  decidir entre usar o cenário referência para cumprir a meta numérica ou
-  investir em mais engenharia de atributos — decisão de negócio, não
-  técnica.
-
   Configurações compartilhadas: RANDOM_STATE, TEST_SIZE, TARGET, ORDEM_NIVEIS_OBESIDADE, N_SPLITS_CV e META_ACCURACY ficam centralizadas em src/model_training.py — decisão deliberada de manter em um único módulo em vez de criar src/config.py separado.
+
+## Status da modelagem
+- notebooks/02_modelagem.ipynb consolida preparação de dados, cenários,
+  baseline e comparação de algoritmos (substituiu 02_preprocessamento_ml.ipynb,
+  03_modelo_baseline.ipynb e 04_comparacao_modelos.ipynb).
+- Cenário `referencia` (com métricas corporais): 89,9%–98,0% de accuracy_cv_media
+  entre os 5 algoritmos — teto de performance/checagem de sanidade, não é
+  candidato a produção (reaprende a fórmula do IMC). Melhor: Random Forest (~98,0%).
+- Cenário `comportamental` (clinicamente relevante): baseline (Regressão
+  Logística) em 60,8% de accuracy_cv_media, abaixo da meta. XGBoost (81,0%),
+  Random Forest (79,6%) e Gradient Boosting (75,8%) superam os 75% exigidos.
+- **Modelo recomendado para produção: Random Forest, cenário `comportamental`**
+  (accuracy_cv_media ≈ 79,6%, accuracy_teste ≈ 79,4%) — desempenho quase igual
+  ao XGBoost (melhor pela CV, mas com gap treino-teste de ~22 p.p., sinal de
+  overfitting), gap CV-teste quase nulo, treino ~10x mais rápido.
+- Recall de `Overweight_Level_II` (classe mais fraca): subiu de 0,16 (baseline)
+  para 0,60 (XGBoost comportamental) — ainda a classe mais difícil, mas não
+  mais "não identificável".
+- Próximo passo: Streamlit (deploy do modelo recomendado) e dashboard analítico.

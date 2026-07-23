@@ -13,6 +13,9 @@ Responsabilidades
 - identificar automaticamente os grupos de variáveis;
 - construir o pré-processador;
 - construir pipelines de Machine Learning;
+- fornecer o wrapper `XGBoostComEncodingDeAlvo`, necessário para que o
+  XGBoost participe da comparação de modelos com o mesmo `y` em texto
+  usado pelos demais algoritmos;
 - centralizar as constantes de configuração compartilhadas do projeto
   (RANDOM_STATE, TEST_SIZE, TARGET, ORDEM_NIVEIS_OBESIDADE, N_SPLITS_CV,
   META_ACCURACY) — decisão deliberada de manter tudo em um único lugar
@@ -32,13 +35,15 @@ from typing import Tuple
 import pandas as pd
 
 from sklearn.compose import ColumnTransformer
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
+    LabelEncoder,
     OneHotEncoder,
     StandardScaler,
 )
+from xgboost import XGBClassifier
 
 # =============================================================================
 # Configurações gerais
@@ -444,3 +449,36 @@ def criar_pipeline(
     )
 
     return pipeline
+
+
+# =============================================================================
+# Modelos
+# =============================================================================
+
+
+class XGBoostComEncodingDeAlvo(BaseEstimator, ClassifierMixin):
+    """Wrapper do XGBClassifier que aceita o alvo como texto.
+
+    O XGBClassifier exige y codificado como inteiros; este wrapper aplica
+    um LabelEncoder internamente em fit() e reverte a codificação em
+    predict(), para que o restante do projeto (avaliar_modelo,
+    ORDEM_NIVEIS_OBESIDADE) continue operando sobre y em texto.
+    """
+
+    def __init__(self, random_state=RANDOM_STATE):
+        self.random_state = random_state
+
+    def fit(self, X, y):
+        self.codificador_alvo_ = LabelEncoder()
+        y_codificado = self.codificador_alvo_.fit_transform(y)
+
+        self.modelo_ = XGBClassifier(random_state=self.random_state)
+        self.modelo_.fit(X, y_codificado)
+
+        self.classes_ = self.codificador_alvo_.classes_
+
+        return self
+
+    def predict(self, X):
+        y_pred_codificado = self.modelo_.predict(X)
+        return self.codificador_alvo_.inverse_transform(y_pred_codificado)
