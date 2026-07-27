@@ -223,18 +223,18 @@ if st.button(
 
         with st.container(border=True):
 
-         st.subheader("Resultado da Predição")
+         st.subheader("Classificação Prevista")
 
         st.metric(
         label="Classificação prevista",
         value=classe_prevista,
     )
 
-        st.write("#### Confiança da predição")
+        st.write("#### Probabilidade estimada da classe")
 
         st.progress(confianca)
 
-        st.caption(f"{confianca:.1%} de confiança")
+        st.caption(f"{confianca:.1%} de probabilidade")
 
     except Exception as e:
 
