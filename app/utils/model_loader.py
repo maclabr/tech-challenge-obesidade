@@ -1,22 +1,12 @@
-from functools import lru_cache
+"""Carregamento centralizado da pipeline de Machine Learning."""
 from pathlib import Path
-
 import joblib
+import streamlit as st
 
+CAMINHO_MODELO = Path(__file__).resolve().parents[2] / "models" / "random_forest_comportamental.joblib"
 
-@lru_cache(maxsize=1)
+@st.cache_resource(show_spinner=False)
 def carregar_modelo():
-    """
-    Carrega a Pipeline treinada.
-
-    O modelo é carregado apenas uma vez durante a execução
-    da aplicação.
-    """
-
-    caminho_modelo = (
-        Path(__file__).resolve().parents[2]
-        / "models"
-        / "random_forest_comportamental.joblib"
-    )
-
-    return joblib.load(caminho_modelo)
+    if not CAMINHO_MODELO.exists():
+        raise FileNotFoundError(f"Modelo não encontrado em: {CAMINHO_MODELO}")
+    return joblib.load(CAMINHO_MODELO)
