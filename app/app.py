@@ -1,10 +1,8 @@
 import streamlit as st
 
 from utils.model_loader import carregar_modelo
+from utils.styles import aplicar_estilos, hero, rodape
 
-# -----------------------------------------------------
-# Configuração da aplicação
-# -----------------------------------------------------
 
 st.set_page_config(
     page_title="Obesity Care Analytics",
@@ -13,49 +11,79 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# -----------------------------------------------------
-# Página inicial
-# -----------------------------------------------------
+aplicar_estilos()
 
-st.title("🏥 Obesity Care Analytics")
 
-st.markdown(
-    """
-## Bem-vindo(a)!
+with st.sidebar:
+    st.markdown("### 🏥 Obesity Care")
+    st.caption("Analytics & Machine Learning")
+    st.divider()
 
-Esta aplicação foi desenvolvida como parte do **Tech Challenge da FIAP – Pós-Tech Data Analytics**.
+    st.info(
+        "Navegue pelas páginas para explorar os dados, realizar uma "
+        "predição e consultar o desempenho do modelo."
+    )
 
-O objetivo é utilizar técnicas de Machine Learning para estimar o nível de obesidade de um indivíduo com base em características pessoais, hábitos de vida e informações comportamentais.
 
-Utilize o menu lateral para navegar pelas funcionalidades da aplicação.
-"""
+hero(
+    "Obesity Care Analytics",
+    "Plataforma analítica para apoiar ações preventivas e a priorização "
+    "do cuidado relacionado à obesidade.",
 )
 
-st.divider()
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.subheader("📊 Dashboard")
-    st.write("Visualize indicadores e análises exploratórias dos dados.")
+    with st.container(border=True):
+        st.subheader("📊 Dashboard")
+        st.write(
+            "Explore a distribuição dos níveis de obesidade e os padrões "
+            "de hábitos identificados na EDA."
+        )
 
 with col2:
-    st.subheader("🩺 Predição")
-    st.write("Realize uma predição utilizando o modelo treinado.")
+    with st.container(border=True):
+        st.subheader("🩺 Predição")
+        st.write(
+            "Estime o nível de obesidade a partir de dados pessoais e "
+            "comportamentais."
+        )
 
 with col3:
-    st.subheader("🧠 Modelo")
-    st.write("Consulte informações e métricas do modelo de Machine Learning.")
+    with st.container(border=True):
+        st.subheader("🧠 Modelo")
+        st.write(
+            "Consulte métricas, metodologia e fatores mais relevantes "
+            "para o Random Forest."
+        )
 
-st.divider()
 
 try:
     carregar_modelo()
-    st.success("✅ Modelo carregado com sucesso.")
-except Exception as erro:
-    st.error(f"Erro ao carregar o modelo: {erro}")
 
-st.info(
-    "Esta aplicação possui finalidade educacional e analítica. "
-    "Os resultados não substituem avaliação ou diagnóstico médico."
+    st.success(
+        "Pipeline de Machine Learning carregada e disponível para predição."
+    )
+
+except Exception as erro:
+    st.error(
+        f"Não foi possível carregar o modelo: {erro}"
+    )
+
+
+st.markdown("### Uso responsável")
+
+st.markdown(
+    """
+    <div class="clinical-note">
+        A classificação é uma estimativa estatística para apoio educacional
+        e analítico. Ela não constitui diagnóstico, não prescreve condutas
+        e deve ser interpretada em conjunto com avaliação clínica.
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
+
+
+rodape()
