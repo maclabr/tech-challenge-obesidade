@@ -3,43 +3,59 @@ import streamlit as st
 from utils.model_loader import carregar_modelo
 
 # -----------------------------------------------------
-# Configuração da página
+# Configuração da aplicação
 # -----------------------------------------------------
 
 st.set_page_config(
-    page_title="Predição de Nível de Obesidade",
-    page_icon="⚕️",
+    page_title="Obesity Care Analytics",
+    page_icon="🏥",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # -----------------------------------------------------
-# Título
+# Página inicial
 # -----------------------------------------------------
 
-st.title("🏥 Predição do Nível de Obesidade")
+st.title("🏥 Obesity Care Analytics")
 
 st.markdown(
     """
-Aplicação desenvolvida para o **Tech Challenge – FIAP Pós-Tech Data Analytics**.
+## Bem-vindo(a)!
 
-O objetivo é estimar o nível de obesidade de um indivíduo a partir de
-características individuais, histórico familiar e hábitos de vida,
-utilizando um modelo de Machine Learning baseado em **Random Forest**.
+Esta aplicação foi desenvolvida como parte do **Tech Challenge da FIAP – Pós-Tech Data Analytics**.
+
+O objetivo é utilizar técnicas de Machine Learning para estimar o nível de obesidade de um indivíduo com base em características pessoais, hábitos de vida e informações comportamentais.
+
+Utilize o menu lateral para navegar pelas funcionalidades da aplicação.
 """
 )
 
 st.divider()
 
-# -----------------------------------------------------
-# Modelo
-# -----------------------------------------------------
+col1, col2, col3 = st.columns(3)
 
-modelo = carregar_modelo()
+with col1:
+    st.subheader("📊 Dashboard")
+    st.write("Visualize indicadores e análises exploratórias dos dados.")
+
+with col2:
+    st.subheader("🩺 Predição")
+    st.write("Realize uma predição utilizando o modelo treinado.")
+
+with col3:
+    st.subheader("🧠 Modelo")
+    st.write("Consulte informações e métricas do modelo de Machine Learning.")
 
 st.divider()
 
-st.markdown(
-    """
-Utilize o menu lateral para navegar entre as páginas da aplicação.
-"""
+try:
+    carregar_modelo()
+    st.success("✅ Modelo carregado com sucesso.")
+except Exception as erro:
+    st.error(f"Erro ao carregar o modelo: {erro}")
+
+st.info(
+    "Esta aplicação possui finalidade educacional e analítica. "
+    "Os resultados não substituem avaliação ou diagnóstico médico."
 )
