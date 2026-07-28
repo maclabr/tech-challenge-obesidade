@@ -43,10 +43,12 @@ with col2:
 
     idade = st.number_input(
         TITULOS["idade"],
-        min_value=1,
-        max_value=100,
+        min_value=14,
+        max_value=61,
         value=25,
-        help=HELP["idade"],
+        help=HELP["idade"] + "\n\nO modelo foi treinado apenas com pacientes entre "
+                              "14 e 61 anos (faixa etária do dataset original) — "
+                              "previsões fora desse intervalo não são confiáveis.",
     )
 
 st.divider()
@@ -223,18 +225,18 @@ if st.button(
 
         with st.container(border=True):
 
-         st.subheader("Classificação Prevista")
+            st.subheader("Classificação Prevista")
 
-        st.metric(
-        label="Classificação prevista",
-        value=classe_prevista,
-    )
+            st.metric(
+                label="Classificação prevista",
+                value=classe_prevista,
+            )
 
-        st.write("#### Probabilidade estimada da classe")
+            st.write("#### Probabilidade estimada da classe")
 
-        st.progress(confianca)
+            st.progress(confianca)
 
-        st.caption(f"{confianca:.1%} de probabilidade")
+            st.caption(f"{confianca:.1%} de probabilidade")
 
     except Exception as e:
 

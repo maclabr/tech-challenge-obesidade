@@ -1,7 +1,6 @@
-from pathlib import Path
-
-import joblib
 import streamlit as st
+
+from utils.model_loader import carregar_modelo
 
 # -----------------------------------------------------
 # Configuração da página
@@ -35,25 +34,7 @@ st.divider()
 # Modelo
 # -----------------------------------------------------
 
-CAMINHO_MODELO = (
-    Path(__file__).resolve().parent.parent
-    / "models"
-    / "random_forest_comportamental.joblib"
-)
-
-try:
-
-    modelo = joblib.load(CAMINHO_MODELO)
-
-    st.success("✅ Modelo carregado com sucesso!")
-
-    st.info(f"Pipeline carregada: {type(modelo).__name__}")
-
-except Exception as erro:
-
-    st.error("Erro ao carregar o modelo.")
-
-    st.exception(erro)
+modelo = carregar_modelo()
 
 st.divider()
 
@@ -62,15 +43,3 @@ st.markdown(
 Utilize o menu lateral para navegar entre as páginas da aplicação.
 """
 )
-
-from utils.model_loader import carregar_modelo
-
-modelo = carregar_modelo()
-
-st.subheader("Diagnóstico da Pipeline")
-
-preprocessador = modelo.named_steps["preprocessador"]
-
-st.write("Colunas esperadas pelo preprocessador:")
-
-st.write(preprocessador.feature_names_in_)
