@@ -1,8 +1,13 @@
 """Constantes compartilhadas pela aplicação Streamlit."""
-ORDEM_NIVEIS = [
-    "Insufficient_Weight", "Normal_Weight", "Overweight_Level_I",
-    "Overweight_Level_II", "Obesity_Type_I", "Obesity_Type_II", "Obesity_Type_III",
-]
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.model_training import ORDEM_NIVEIS_OBESIDADE as ORDEM_NIVEIS
+
 ROTULOS_NIVEIS = {
     "Insufficient_Weight": "Peso insuficiente", "Normal_Weight": "Peso normal",
     "Overweight_Level_I": "Sobrepeso I", "Overweight_Level_II": "Sobrepeso II",

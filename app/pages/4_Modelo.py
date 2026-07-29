@@ -4,14 +4,21 @@ from utils.explainability import obter_importancia_global
 from utils.model_loader import carregar_modelo
 from utils.styles import aplicar_estilos, hero, rodape
 
+METRICAS_MODELO = {
+    "accuracy_cv": 0.7963,
+    "accuracy_teste": 0.7943,
+    "f1_macro_cv": 0.7891,
+    "meta": 0.75,
+}
+
 aplicar_estilos()
 hero("Modelo de Machine Learning", "Metodologia, desempenho e interpretabilidade do Random Forest selecionado para o cenário comportamental.")
 
 c1,c2,c3,c4=st.columns(4)
-c1.metric("Accuracy CV", "79,6%")
-c2.metric("Accuracy teste", "79,4%")
-c3.metric("F1-macro CV", "79,0%")
-c4.metric("Meta do projeto", "75,0%", "Atingida")
+c1.metric("Accuracy CV", f"{METRICAS_MODELO['accuracy_cv']:.1%}")
+c2.metric("Accuracy teste", f"{METRICAS_MODELO['accuracy_teste']:.1%}")
+c3.metric("F1-macro CV", f"{METRICAS_MODELO['f1_macro_cv']:.1%}")
+c4.metric("Meta do projeto", f"{METRICAS_MODELO['meta']:.1%}", "Atingida")
 
 st.markdown("## Por que Random Forest?")
 st.write("Embora o XGBoost tenha alcançado a maior média de validação cruzada no cenário comportamental, o Random Forest foi recomendado para produção por apresentar desempenho muito próximo, menor diferença entre validação e teste, treinamento mais rápido e menor sinal de overfitting.")

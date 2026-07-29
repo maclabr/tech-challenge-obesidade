@@ -1,5 +1,4 @@
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 from utils.constants import ORDEM_NIVEIS, ROTULOS_NIVEIS, CORES_NIVEIS
 from utils.data_loader import carregar_dados_dashboard

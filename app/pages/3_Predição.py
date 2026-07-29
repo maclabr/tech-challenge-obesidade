@@ -239,6 +239,14 @@ if enviar:
                 "avaliação clínica."
             )
 
+        elif "Peso insuficiente" in classe:
+            estilo = "risk-medium"
+            interpretacao = (
+                "O padrão informado foi associado a baixo peso. Peso "
+                "insuficiente também é clinicamente relevante e pode "
+                "indicar necessidade de acompanhamento nutricional."
+            )
+
         else:
             estilo = "risk-low"
             interpretacao = (
