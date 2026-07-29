@@ -80,19 +80,19 @@ with st.form("form_predicao", clear_on_submit=False):
 
         fcvc = c2.slider(
             TITULOS["fcvc"],
-            min_value=1.0,
-            max_value=3.0,
-            value=2.0,
-            step=0.5,
+            min_value=1,
+            max_value=3,
+            value=2,
+            step=1,
             help=HELP["fcvc"],
         )
 
         ncp = c3.slider(
             TITULOS["ncp"],
-            min_value=1.0,
-            max_value=4.0,
-            value=3.0,
-            step=0.5,
+            min_value=1,
+            max_value=4,
+            value=3,
+            step=1,
             help=HELP["ncp"],
         )
 
@@ -106,10 +106,10 @@ with st.form("form_predicao", clear_on_submit=False):
 
         ch2o = c5.slider(
             TITULOS["ch2o"],
-            min_value=1.0,
-            max_value=3.0,
-            value=2.0,
-            step=0.5,
+            min_value=1,
+            max_value=3,
+            value=2,
+            step=1,
             help=HELP["ch2o"],
         )
 
@@ -124,19 +124,19 @@ with st.form("form_predicao", clear_on_submit=False):
 
         faf = c1.slider(
             TITULOS["faf"],
-            min_value=0.0,
-            max_value=3.0,
-            value=1.0,
-            step=0.5,
+            min_value=0,
+            max_value=3,
+            value=1,
+            step=1,
             help=HELP["faf"],
         )
 
         tue = c2.slider(
             TITULOS["tue"],
-            min_value=0.0,
-            max_value=2.0,
-            value=1.0,
-            step=0.5,
+            min_value=0,
+            max_value=2,
+            value=1,
+            step=1,
             help=HELP["tue"],
         )
 
