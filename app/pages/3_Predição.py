@@ -6,7 +6,13 @@ import streamlit as st
 
 from utils.explainability import obter_importancia_global
 from utils.predictor import prever
-from utils.styles import aplicar_estilos, hero, rodape
+from utils.styles import (
+    aplicar_estilos,
+    card_imc,
+    hero,
+    placeholder_imc,
+    rodape,
+)
 from utils.ui_options import (
     FREQUENCIA,
     HELP,
@@ -15,6 +21,22 @@ from utils.ui_options import (
     TITULOS,
     TRANSPORTE,
 )
+
+
+def classificar_imc(valor_imc: float) -> tuple[str, str]:
+    """Retorna a classificação e a classe visual do IMC para adultos."""
+
+    if valor_imc < 18.5:
+        return "Baixo peso", "bmi-low"
+    if valor_imc < 25.0:
+        return "Peso adequado", "bmi-adequate"
+    if valor_imc < 30.0:
+        return "Sobrepeso", "bmi-overweight"
+    if valor_imc < 35.0:
+        return "Obesidade grau I", "bmi-obesity-one"
+    if valor_imc < 40.0:
+        return "Obesidade grau II", "bmi-obesity-two"
+    return "Obesidade grau III", "bmi-obesity-three"
 
 
 aplicar_estilos()
@@ -29,6 +51,45 @@ st.info(
     "O modelo não utiliza peso, altura ou IMC. A estimativa é baseada em "
     "idade, histórico familiar e hábitos de vida."
 )
+
+st.subheader("Avaliação corporal complementar")
+st.caption(
+    "Informe peso e altura para calcular o IMC. Esses dados não serão "
+    "utilizados pelo modelo de Machine Learning."
+)
+
+col_peso, col_altura = st.columns(2)
+
+peso = col_peso.number_input(
+    "⚖️ Peso (kg)",
+    min_value=0.0,
+    max_value=350.0,
+    value=0.0,
+    step=0.1,
+    format="%.1f",
+    help="Informe o peso atual em quilogramas.",
+)
+
+altura = col_altura.number_input(
+    "📏 Altura (m)",
+    min_value=0.0,
+    max_value=2.50,
+    value=0.0,
+    step=0.01,
+    format="%.2f",
+    help="Informe a altura em metros. Exemplo: 1,65.",
+)
+
+imc = None
+
+if peso > 0 and altura > 0:
+    imc = peso / (altura ** 2)
+    classificacao_imc, classe_visual_imc = classificar_imc(imc)
+    card_imc(imc, classificacao_imc, classe_visual_imc)
+else:
+    placeholder_imc()
+
+st.divider()
 
 aceito = st.checkbox(
     "Confirmo que os dados foram revisados e compreendo que o resultado "
@@ -199,6 +260,12 @@ if enviar:
         confianca = resultado["confianca"]
 
         st.success("Predição concluída com sucesso.")
+
+        if imc is not None:
+            st.caption(
+                f"IMC complementar informado nesta avaliação: {imc:.2f} kg/m². "
+                "Esse valor não foi utilizado pelo modelo."
+            )
 
         c1, c2, c3 = st.columns(3)
 
