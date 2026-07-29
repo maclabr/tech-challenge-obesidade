@@ -123,11 +123,14 @@ HELP = {
     "faf":
         "Frequência de prática de atividade física.\n\n"
         "0 = Nunca\n"
+        "1 = Raramente\n"
+        "2 = Frequentemente\n"
         "3 = Muito frequente",
 
     "tue":
         "Tempo diário dedicado ao uso de televisão, computador, celular ou videogame.\n\n"
         "0 = Baixo\n"
+        "1 = Moderado\n"
         "2 = Elevado",
 
     "calc":
