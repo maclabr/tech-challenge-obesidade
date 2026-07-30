@@ -1417,7 +1417,653 @@ def aplicar_estilos() -> None:
                 font-size: 1.7rem;
             }
         }
-        </style>
+
+
+        /* Predição — estrutura em duas colunas */
+        .prediction-info-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin: 0 0 1.35rem;
+            padding: 16px 18px;
+            background: #F4F8FD;
+            border: 1px solid #DCE8F4;
+            border-left: 4px solid #1769E8;
+            border-radius: 13px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .prediction-info-icon,
+        .prediction-panel-icon,
+        .prediction-placeholder-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            border-radius: 11px;
+        }
+
+        .prediction-info-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(23, 105, 232, 0.10);
+            color: #1769E8;
+        }
+
+        .prediction-info-icon svg,
+        .prediction-panel-icon svg,
+        .prediction-placeholder-icon svg,
+        .bmi-card-icon svg {
+            width: 21px;
+            height: 21px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .prediction-info-content strong {
+            display: block;
+            margin: 1px 0 4px;
+            color: var(--navy);
+            font-size: 0.88rem;
+            font-weight: 760;
+        }
+
+        .prediction-info-content p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.55;
+        }
+
+        .prediction-panel-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 0.9rem;
+        }
+
+        .prediction-panel-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+        }
+
+        .prediction-panel-heading h2 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1.16rem;
+            font-weight: 750;
+            letter-spacing: -0.025em;
+        }
+
+        .prediction-panel-heading p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+
+        .prediction-side-title {
+            margin: 1.25rem 0 0.4rem;
+            color: var(--navy);
+            font-size: 0.93rem;
+            font-weight: 740;
+        }
+
+        .prediction-side-caption {
+            margin: 0 0 0.75rem;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        .prediction-placeholder-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            min-height: 118px;
+            margin-top: 0.55rem;
+            padding: 17px;
+            background: #FFFFFF;
+            border: 1px dashed #CBD5E2;
+            border-radius: 13px;
+        }
+
+        .prediction-placeholder-icon {
+            width: 38px;
+            height: 38px;
+            background: #F0F3F8;
+            color: #66728F;
+        }
+
+        .prediction-placeholder-card strong {
+            display: block;
+            margin: 2px 0 5px;
+            color: var(--navy);
+            font-size: 0.86rem;
+        }
+
+        .prediction-placeholder-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        .prediction-result-card {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.65rem;
+            padding: 20px;
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--result-accent, var(--primary));
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .prediction-result-card::after {
+            content: "";
+            position: absolute;
+            top: -42px;
+            right: -42px;
+            width: 118px;
+            height: 118px;
+            background: var(--result-soft, var(--primary-soft));
+            border-radius: 50%;
+            opacity: 0.68;
+        }
+
+        .prediction-result-low {
+            --result-accent: #009E8E;
+            --result-soft: #EAF8F6;
+        }
+
+        .prediction-result-medium {
+            --result-accent: #D9820B;
+            --result-soft: #FFF7E7;
+        }
+
+        .prediction-result-high {
+            --result-accent: #C94A4A;
+            --result-soft: #FFF0F0;
+        }
+
+        .prediction-result-label {
+            position: relative;
+            z-index: 1;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 760;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+
+        .prediction-result-class {
+            position: relative;
+            z-index: 1;
+            margin: 7px 0 13px;
+            color: var(--navy);
+            font-size: 1.38rem;
+            font-weight: 790;
+            line-height: 1.18;
+            letter-spacing: -0.035em;
+        }
+
+        .prediction-result-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .prediction-result-item {
+            padding: 10px 11px;
+            background: #F8FAFC;
+            border: 1px solid #E8EDF3;
+            border-radius: 10px;
+        }
+
+        .prediction-result-item span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.68rem;
+            font-weight: 630;
+        }
+
+        .prediction-result-item strong {
+            display: block;
+            margin-top: 3px;
+            color: var(--navy);
+            font-size: 0.89rem;
+            font-weight: 750;
+        }
+
+        .prediction-summary-card {
+            margin-top: 0.7rem;
+            padding: 15px 16px;
+            background: #F8FAFC;
+            border: 1px solid #E5EAF1;
+            border-radius: 12px;
+        }
+
+        .prediction-summary-card strong {
+            color: var(--navy);
+            font-size: 0.79rem;
+        }
+
+        .prediction-summary-card p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 0.76rem;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 900px) {
+            .prediction-result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+
+        /* Predição — refinamento exclusivo do formulário em etapas */
+        .form-step-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            margin: 0.15rem 0 1rem;
+        }
+
+        .form-step-tab {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-height: 58px;
+            padding: 9px 10px;
+            color: var(--muted);
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-step-tab.is-active {
+            color: var(--navy);
+            border-color: color-mix(in srgb, var(--tab-accent) 38%, white);
+            box-shadow: inset 0 -3px 0 var(--tab-accent), var(--shadow-sm);
+        }
+
+        .form-step-tab.is-complete {
+            border-color: color-mix(in srgb, var(--tab-accent) 22%, white);
+        }
+
+        .form-step-icon,
+        .form-section-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            color: var(--tab-accent);
+            background: color-mix(in srgb, var(--tab-accent) 11%, white);
+            border-radius: 9px;
+        }
+
+        .form-step-icon {
+            width: 31px;
+            height: 31px;
+        }
+
+        .form-step-icon svg,
+        .form-section-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .form-step-tab small,
+        .form-step-tab strong {
+            display: block;
+        }
+
+        .form-step-tab small {
+            margin-bottom: 1px;
+            color: var(--tab-accent);
+            font-size: 0.61rem;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .form-step-tab strong {
+            font-size: 0.71rem;
+            line-height: 1.2;
+        }
+
+        .form-section-heading {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin: 0.2rem 0 1rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section-icon {
+            width: 39px;
+            height: 39px;
+        }
+
+        .form-section-heading span {
+            color: var(--tab-accent);
+            font-size: 0.67rem;
+            font-weight: 760;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .form-section-heading h3 {
+            margin: 1px 0 0;
+            color: var(--navy);
+            font-size: 1.08rem;
+            font-weight: 760;
+        }
+
+        div[data-testid="stButton"] > button[kind="primary"],
+        div[data-testid="stButton"] > button[data-testid="stBaseButton-primary"] {
+            color: #FFFFFF !important;
+            font-weight: 750 !important;
+        }
+
+        div[data-testid="stButton"] > button[kind="primary"] p,
+        div[data-testid="stButton"] > button[data-testid="stBaseButton-primary"] p {
+            color: #FFFFFF !important;
+            font-weight: 750 !important;
+        }
+
+        @media (max-width: 900px) {
+            .form-step-tabs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 520px) {
+            .form-step-tabs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        
+
+        /* Predição — apresentação do resultado (Fase 4.2) */
+        .prediction-result-card {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.65rem;
+            padding: 22px 20px 19px;
+            background: linear-gradient(145deg, #FFFFFF 0%, #FBFCFE 100%);
+            border: 1px solid var(--border);
+            border-left: 1px solid var(--border);
+            border-radius: 15px;
+            box-shadow: 0 10px 28px rgba(11, 21, 56, 0.08);
+        }
+
+        .prediction-result-card::after {
+            top: -54px;
+            right: -48px;
+            width: 138px;
+            height: 138px;
+            opacity: 0.52;
+        }
+
+        .prediction-result-topbar {
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--result-accent), var(--result-accent-soft));
+        }
+
+        .prediction-result-healthy {
+            --result-accent: #009E8E;
+            --result-accent-soft: #69D3C4;
+            --result-soft: #EAF8F6;
+        }
+
+        .prediction-result-underweight {
+            --result-accent: #4B82D0;
+            --result-accent-soft: #8FB5EA;
+            --result-soft: #EDF5FF;
+        }
+
+        .prediction-result-overweight {
+            --result-accent: #D39A15;
+            --result-accent-soft: #F0C967;
+            --result-soft: #FFF8E6;
+        }
+
+        .prediction-result-obesity-one {
+            --result-accent: #E07A22;
+            --result-accent-soft: #F1AA69;
+            --result-soft: #FFF3E9;
+        }
+
+        .prediction-result-obesity-two {
+            --result-accent: #C94A4A;
+            --result-accent-soft: #E18484;
+            --result-soft: #FFF0F0;
+        }
+
+        .prediction-result-obesity-three {
+            --result-accent: #8750C7;
+            --result-accent-soft: #B687E8;
+            --result-soft: #F5EEFC;
+        }
+
+        .prediction-result-header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 17px;
+        }
+
+        .prediction-result-check {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 34px;
+            width: 34px;
+            height: 34px;
+            color: #FFFFFF;
+            background: var(--result-accent);
+            border-radius: 50%;
+            font-size: 1rem;
+            font-weight: 800;
+            box-shadow: 0 6px 14px color-mix(in srgb, var(--result-accent) 25%, transparent);
+        }
+
+        .prediction-result-badge {
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            margin-top: 8px;
+            padding: 8px 12px;
+            color: var(--result-accent);
+            background: var(--result-soft);
+            border: 1px solid color-mix(in srgb, var(--result-accent) 22%, white);
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 780;
+            line-height: 1.25;
+        }
+
+        .prediction-confidence-block {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 14px;
+            padding: 13px 14px;
+            background: #F8FAFC;
+            border: 1px solid #E7ECF2;
+            border-radius: 11px;
+        }
+
+        .prediction-confidence-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px;
+        }
+
+        .prediction-confidence-heading span {
+            color: var(--text);
+            font-size: 0.76rem;
+            font-weight: 680;
+        }
+
+        .prediction-confidence-heading strong {
+            color: var(--result-accent);
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .prediction-confidence-track {
+            width: 100%;
+            height: 8px;
+            overflow: hidden;
+            background: #E6EBF1;
+            border-radius: 999px;
+        }
+
+        .prediction-confidence-track span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--result-accent), var(--result-accent-soft));
+            border-radius: inherit;
+        }
+
+        .prediction-confidence-block small {
+            display: block;
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+
+        .prediction-result-grid {
+            gap: 10px;
+        }
+
+        .prediction-result-item {
+            min-height: 66px;
+            padding: 11px 12px;
+            background: #FFFFFF;
+            border-color: #E5EAF1;
+        }
+
+        .prediction-summary-card {
+            padding: 16px 17px;
+            background: linear-gradient(135deg, #F8FAFC, #FFFFFF);
+            border-left: 3px solid #AAB5C6;
+        }
+
+        .clinical-interpretation-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin: 1rem 0 1.15rem;
+            padding: 19px 20px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .clinical-interpretation-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 43px;
+            width: 43px;
+            height: 43px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid currentColor;
+            border-radius: 12px;
+        }
+
+        .clinical-interpretation-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .clinical-interpretation-content {
+            min-width: 0;
+        }
+
+        .clinical-interpretation-content > span {
+            display: block;
+            margin-bottom: 3px;
+            color: inherit;
+            font-size: 0.68rem;
+            font-weight: 770;
+            letter-spacing: 0.075em;
+            text-transform: uppercase;
+        }
+
+        .clinical-interpretation-content h3 {
+            margin: 0 0 7px;
+            color: var(--navy);
+            font-size: 0.98rem;
+            font-weight: 750;
+        }
+
+        .clinical-interpretation-content p {
+            margin: 0;
+            color: var(--text);
+            font-size: 0.82rem;
+            line-height: 1.62;
+        }
+
+        .clinical-interpretation-card.risk-low {
+            color: #007E73;
+        }
+
+        .clinical-interpretation-card.risk-medium {
+            color: #B87508;
+        }
+
+        .clinical-interpretation-card.risk-high {
+            color: #B83F3F;
+        }
+
+        @media (max-width: 640px) {
+            .prediction-result-card {
+                padding: 21px 16px 17px;
+            }
+
+            .prediction-result-badge {
+                font-size: 0.9rem;
+            }
+
+            .clinical-interpretation-card {
+                padding: 17px;
+            }
+        }
+</style>
         """,
         unsafe_allow_html=True,
     )
@@ -1578,7 +2224,13 @@ def card_imc(
     st.markdown(
         (
             f'<div class="bmi-card {classe_visual_segura}">'
-            '<div class="bmi-card-icon" aria-hidden="true">⚖️</div>'
+            '<div class="bmi-card-icon" aria-hidden="true">'
+            '<svg viewBox="0 0 24 24">'
+            '<path d="M5 20h14"/>'
+            '<path d="M7 20 5.8 8.8A3 3 0 0 1 8.8 5.5h6.4a3 3 0 0 1 3 3.3L17 20"/>'
+            '<path d="M9 10a3 3 0 0 1 6 0"/>'
+            '<path d="m12 10 1.6-1.4"/>'
+            '</svg></div>'
             '<div class="bmi-card-content">'
             '<div class="bmi-card-label">'
             "Índice de Massa Corporal"
@@ -1605,10 +2257,21 @@ def card_imc(
 def placeholder_imc() -> None:
     """Exibe orientação enquanto peso e altura não foram informados."""
 
-    st.info(
-        "⚖️ **Preencha peso e altura para visualizar o IMC**\n\n"
-        "O resultado será calculado automaticamente e servirá somente "
-        "como informação complementar."
+    st.markdown(
+        (
+            '<div class="prediction-placeholder-card">'
+            '<span class="prediction-placeholder-icon" aria-hidden="true">'
+            '<svg viewBox="0 0 24 24">'
+            '<path d="M5 20h14"/>'
+            '<path d="M7 20 5.8 8.8A3 3 0 0 1 8.8 5.5h6.4a3 3 0 0 1 3 3.3L17 20"/>'
+            '<path d="M9 10a3 3 0 0 1 6 0"/>'
+            '</svg>'
+            '</span>'
+            '<div><strong>IMC aguardando dados</strong>'
+            '<p>Preencha peso e altura para visualizar automaticamente o indicador complementar.</p>'
+            '</div></div>'
+        ),
+        unsafe_allow_html=True,
     )
 
 

@@ -1,3 +1,4 @@
+import html
 import time
 
 import pandas as pd
@@ -39,6 +40,77 @@ def classificar_imc(valor_imc: float) -> tuple[str, str]:
     return "Obesidade grau III", "bmi-obesity-three"
 
 
+def faixa_confianca(confianca: float) -> str:
+    """Retorna a leitura visual da confiança calculada pelo modelo."""
+
+    if confianca >= 0.75:
+        return "Alta"
+    if confianca >= 0.50:
+        return "Moderada"
+    return "Baixa"
+
+
+def renderizar_resultado_lateral(
+    classe: str,
+    confianca: float,
+    imc: float | None,
+) -> None:
+    """Apresenta o resumo principal da predição no painel lateral."""
+
+    classe_normalizada = str(classe).lower()
+
+    if "obesidade tipo iii" in classe_normalizada or "obesidade grau iii" in classe_normalizada:
+        classe_visual = "prediction-result-obesity-three"
+    elif "obesidade tipo ii" in classe_normalizada or "obesidade grau ii" in classe_normalizada:
+        classe_visual = "prediction-result-obesity-two"
+    elif "obesidade" in classe_normalizada:
+        classe_visual = "prediction-result-obesity-one"
+    elif "sobrepeso" in classe_normalizada:
+        classe_visual = "prediction-result-overweight"
+    elif "peso insuficiente" in classe_normalizada or "baixo peso" in classe_normalizada:
+        classe_visual = "prediction-result-underweight"
+    else:
+        classe_visual = "prediction-result-healthy"
+
+    classe_segura = html.escape(str(classe))
+    imc_resumo = f"{imc:.2f} kg/m²" if imc is not None else "Não informado"
+    confianca_percentual = max(0.0, min(confianca * 100, 100.0))
+
+    st.markdown(
+        (
+            f'<div class="prediction-result-card {classe_visual}">'
+            '<div class="prediction-result-topbar"></div>'
+            '<div class="prediction-result-header">'
+            '<div>'
+            '<div class="prediction-result-label">Resultado da predição</div>'
+            f'<div class="prediction-result-badge">{classe_segura}</div>'
+            '</div>'
+            '<span class="prediction-result-check" aria-hidden="true">✓</span>'
+            '</div>'
+            '<div class="prediction-confidence-block">'
+            '<div class="prediction-confidence-heading">'
+            '<span>Confiança do modelo</span>'
+            f'<strong>{confianca:.1%}</strong>'
+            '</div>'
+            '<div class="prediction-confidence-track">'
+            f'<span style="width:{confianca_percentual:.1f}%"></span>'
+            '</div>'
+            f'<small>Faixa de confiança: {faixa_confianca(confianca)}</small>'
+            '</div>'
+            '<div class="prediction-result-grid">'
+            '<div class="prediction-result-item">'
+            '<span>Modelo utilizado</span><strong>Random Forest</strong>'
+            '</div>'
+            '<div class="prediction-result-item">'
+            '<span>IMC complementar</span>'
+            f'<strong>{html.escape(imc_resumo)}</strong>'
+            '</div>'
+            '</div></div>'
+        ),
+        unsafe_allow_html=True,
+    )
+
+
 aplicar_estilos()
 
 hero(
@@ -47,177 +119,295 @@ hero(
     "do nível de obesidade e uma leitura transparente da confiança do modelo.",
 )
 
-st.info(
-    "O modelo não utiliza peso, altura ou IMC. A estimativa é baseada em "
-    "idade, histórico familiar e hábitos de vida."
+st.markdown(
+    """
+    <div class="prediction-info-card">
+        <span class="prediction-info-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 10v6"></path>
+                <path d="M12 7h.01"></path>
+            </svg>
+        </span>
+        <div class="prediction-info-content">
+            <strong>Uso complementar e responsável</strong>
+            <p>O modelo utiliza idade, histórico familiar e hábitos de vida.
+            Peso, altura e IMC são apresentados como apoio complementar e não
+            influenciam a predição.</p>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-st.subheader("Avaliação corporal complementar")
-st.caption(
-    "Informe peso e altura para calcular o IMC. Esses dados não serão "
-    "utilizados pelo modelo de Machine Learning."
-)
+col_formulario, col_lateral = st.columns([1.7, 1], gap="large")
 
-col_peso, col_altura = st.columns(2)
-
-peso = col_peso.number_input(
-    "⚖️ Peso (kg)",
-    min_value=0.0,
-    max_value=350.0,
-    value=0.0,
-    step=0.1,
-    format="%.1f",
-    help="Informe o peso atual em quilogramas.",
-)
-
-altura = col_altura.number_input(
-    "📏 Altura (m)",
-    min_value=0.0,
-    max_value=2.50,
-    value=0.0,
-    step=0.01,
-    format="%.2f",
-    help="Informe a altura em metros. Exemplo: 1,65.",
-)
-
-imc = None
-
-if peso > 0 and altura > 0:
-    imc = peso / (altura ** 2)
-    classificacao_imc, classe_visual_imc = classificar_imc(imc)
-    card_imc(imc, classificacao_imc, classe_visual_imc)
-else:
-    placeholder_imc()
-
-st.divider()
-
-aceito = st.checkbox(
-    "Confirmo que os dados foram revisados e compreendo que o resultado "
-    "não substitui avaliação clínica."
-)
-
-with st.form("form_predicao", clear_on_submit=False):
-    tab1, tab2, tab3, tab4 = st.tabs(
-        [
-            "Dados pessoais",
-            "Alimentação",
-            "Estilo de vida",
-            "Mobilidade",
-        ]
+with col_formulario:
+    st.markdown(
+        """
+        <div class="prediction-panel-heading">
+            <span class="prediction-panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 11h6"></path>
+                    <path d="M9 15h6"></path>
+                    <path d="M10 3h4"></path>
+                    <rect x="5" y="5" width="14" height="16" rx="2"></rect>
+                </svg>
+            </span>
+            <div>
+                <h2>Dados para avaliação</h2>
+                <p>Preencha as informações comportamentais utilizadas pelo modelo.</p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    with tab1:
+    if "etapa_predicao" not in st.session_state:
+        st.session_state.etapa_predicao = 1
+
+    valores_padrao = {
+        "pred_sexo_label": list(SEXO)[0],
+        "pred_idade": 25,
+        "pred_historico_label": list(SIM_NAO)[0],
+        "pred_favc_label": list(SIM_NAO)[0],
+        "pred_fcvc": 2,
+        "pred_ncp": 3,
+        "pred_caec_label": list(FREQUENCIA)[0],
+        "pred_ch2o": 2,
+        "pred_scc_label": list(SIM_NAO)[0],
+        "pred_faf": 1,
+        "pred_tue": 1,
+        "pred_smoke_label": list(SIM_NAO)[0],
+        "pred_calc_label": list(FREQUENCIA)[0],
+        "pred_mtrans_label": list(TRANSPORTE)[0],
+    }
+
+    for chave, valor_padrao in valores_padrao.items():
+        if chave not in st.session_state:
+            st.session_state[chave] = valor_padrao
+
+    etapas = [
+        (1, "Dados pessoais", "#1769E8", "user"),
+        (2, "Alimentação", "#12A995", "nutrition"),
+        (3, "Estilo de vida", "#8754C9", "activity"),
+        (4, "Mobilidade", "#D8832F", "mobility"),
+    ]
+
+    icones = {
+        "user": """
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"></circle>
+            <path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path></svg>
+        """,
+        "nutrition": """
+            <svg viewBox="0 0 24 24"><path d="M12 7c-1.4-2.3-4.8-2.6-6.4-.5-2.3 3.1.2 10.8 6.4 13.5 6.2-2.7 8.7-10.4 6.4-13.5C16.8 4.4 13.4 4.7 12 7Z"></path>
+            <path d="M12 7c.1-2.2 1.2-3.8 3.3-4.7"></path></svg>
+        """,
+        "activity": """
+            <svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"></path></svg>
+        """,
+        "mobility": """
+            <svg viewBox="0 0 24 24"><path d="M5 17h14"></path><path d="M7 17 9 8h6l2 9"></path>
+            <circle cx="8" cy="19" r="1.5"></circle><circle cx="16" cy="19" r="1.5"></circle></svg>
+        """,
+    }
+
+    etapa_atual = st.session_state.etapa_predicao
+    abas_html = "".join(
+        (
+            f'<div class="form-step-tab '
+            f'{"is-active" if numero == etapa_atual else ""} '
+            f'{"is-complete" if numero < etapa_atual else ""}" '
+            f' style="--tab-accent:{cor}">'
+            f'<span class="form-step-icon">{icones[icone]}</span>'
+            f'<span><small>Etapa {numero}</small><strong>{titulo}</strong></span>'
+            '</div>'
+        )
+        for numero, titulo, cor, icone in etapas
+    )
+
+    st.markdown(
+        f'<div class="form-step-tabs">{abas_html}</div>',
+        unsafe_allow_html=True,
+    )
+
+    numero, titulo, cor, icone = etapas[etapa_atual - 1]
+    st.markdown(
+        (
+            f'<div class="form-section-heading" style="--tab-accent:{cor}">'
+            f'<span class="form-section-icon">{icones[icone]}</span>'
+            '<div>'
+            f'<span>Etapa {numero} de 4</span>'
+            f'<h3>{titulo}</h3>'
+            '</div></div>'
+        ),
+        unsafe_allow_html=True,
+    )
+
+    if etapa_atual == 1:
         c1, c2, c3 = st.columns(3)
 
-        sexo_label = c1.selectbox(
+        c1.selectbox(
             TITULOS["sexo"],
             list(SEXO),
             help=HELP["sexo"],
+            key="pred_sexo_label",
         )
 
-        idade = c2.number_input(
+        c2.number_input(
             TITULOS["idade"],
             min_value=14,
             max_value=61,
-            value=25,
             step=1,
             help=HELP["idade"],
+            key="pred_idade",
         )
 
-        historico_label = c3.selectbox(
+        c3.selectbox(
             TITULOS["historico"],
             list(SIM_NAO),
             help=HELP["historico"],
+            key="pred_historico_label",
         )
 
-    with tab2:
+        _, col_proximo = st.columns([1.25, 1])
+        if col_proximo.button(
+            "Próximo: Alimentação  →",
+            type="primary",
+            use_container_width=True,
+            key="proximo_alimentacao",
+        ):
+            st.session_state.etapa_predicao = 2
+            st.rerun()
+
+    elif etapa_atual == 2:
         c1, c2, c3 = st.columns(3)
 
-        favc_label = c1.selectbox(
+        c1.selectbox(
             TITULOS["favc"],
             list(SIM_NAO),
             help=HELP["favc"],
+            key="pred_favc_label",
         )
 
-        fcvc = c2.slider(
+        c2.slider(
             TITULOS["fcvc"],
             min_value=1,
             max_value=3,
-            value=2,
             step=1,
             help=HELP["fcvc"],
+            key="pred_fcvc",
         )
 
-        ncp = c3.slider(
+        c3.slider(
             TITULOS["ncp"],
             min_value=1,
             max_value=4,
-            value=3,
             step=1,
             help=HELP["ncp"],
+            key="pred_ncp",
         )
 
         c4, c5, c6 = st.columns(3)
 
-        caec_label = c4.selectbox(
+        c4.selectbox(
             TITULOS["caec"],
             list(FREQUENCIA),
             help=HELP["caec"],
+            key="pred_caec_label",
         )
 
-        ch2o = c5.slider(
+        c5.slider(
             TITULOS["ch2o"],
             min_value=1,
             max_value=3,
-            value=2,
             step=1,
             help=HELP["ch2o"],
+            key="pred_ch2o",
         )
 
-        scc_label = c6.selectbox(
+        c6.selectbox(
             TITULOS["scc"],
             list(SIM_NAO),
             help=HELP["scc"],
+            key="pred_scc_label",
         )
 
-    with tab3:
+        col_voltar, col_proximo = st.columns(2)
+        if col_voltar.button(
+            "←  Voltar",
+            use_container_width=True,
+            key="voltar_dados_pessoais",
+        ):
+            st.session_state.etapa_predicao = 1
+            st.rerun()
+        if col_proximo.button(
+            "Próximo: Estilo de vida  →",
+            type="primary",
+            use_container_width=True,
+            key="proximo_estilo_vida",
+        ):
+            st.session_state.etapa_predicao = 3
+            st.rerun()
+
+    elif etapa_atual == 3:
         c1, c2, c3, c4 = st.columns(4)
 
-        faf = c1.slider(
+        c1.slider(
             TITULOS["faf"],
             min_value=0,
             max_value=3,
-            value=1,
             step=1,
             help=HELP["faf"],
+            key="pred_faf",
         )
 
-        tue = c2.slider(
+        c2.slider(
             TITULOS["tue"],
             min_value=0,
             max_value=2,
-            value=1,
             step=1,
             help=HELP["tue"],
+            key="pred_tue",
         )
 
-        smoke_label = c3.selectbox(
+        c3.selectbox(
             TITULOS["smoke"],
             list(SIM_NAO),
             help=HELP["smoke"],
+            key="pred_smoke_label",
         )
 
-        calc_label = c4.selectbox(
+        c4.selectbox(
             TITULOS["calc"],
             list(FREQUENCIA),
             help=HELP["calc"],
+            key="pred_calc_label",
         )
 
-    with tab4:
-        mtrans_label = st.selectbox(
+        col_voltar, col_proximo = st.columns(2)
+        if col_voltar.button(
+            "←  Voltar",
+            use_container_width=True,
+            key="voltar_alimentacao",
+        ):
+            st.session_state.etapa_predicao = 2
+            st.rerun()
+        if col_proximo.button(
+            "Próximo: Mobilidade  →",
+            type="primary",
+            use_container_width=True,
+            key="proximo_mobilidade",
+        ):
+            st.session_state.etapa_predicao = 4
+            st.rerun()
+
+    else:
+        st.selectbox(
             TITULOS["mtrans"],
             list(TRANSPORTE),
             help=HELP["mtrans"],
+            key="pred_mtrans_label",
         )
 
         st.caption(
@@ -225,30 +415,101 @@ with st.form("form_predicao", clear_on_submit=False):
             "utilizada pelo pipeline."
         )
 
-    enviar = st.form_submit_button(
-        "🩺 Realizar predição",
-        type="primary",
-        use_container_width=True,
-        disabled=not aceito,
+        aceito = st.checkbox(
+            "Confirmo que os dados foram revisados e compreendo que o resultado "
+            "não substitui avaliação clínica.",
+            key="pred_aceito",
+        )
+
+        col_voltar, col_enviar = st.columns([0.8, 1.35])
+        if col_voltar.button(
+            "←  Voltar",
+            use_container_width=True,
+            key="voltar_estilo_vida",
+        ):
+            st.session_state.etapa_predicao = 3
+            st.rerun()
+
+        enviar = col_enviar.button(
+            "Realizar a predição",
+            type="primary",
+            use_container_width=True,
+            disabled=not aceito,
+            key="realizar_predicao",
+        )
+
+    if etapa_atual != 4:
+        enviar = False
+
+with col_lateral:
+    st.markdown(
+        """
+        <div class="prediction-panel-heading">
+            <span class="prediction-panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path d="M5 20h14"></path>
+                    <path d="M7 20 5.8 8.8A3 3 0 0 1 8.8 5.5h6.4a3 3 0 0 1 3 3.3L17 20"></path>
+                    <path d="M9 10a3 3 0 0 1 6 0"></path>
+                </svg>
+            </span>
+            <div>
+                <h2>Avaliação complementar</h2>
+                <p>O IMC auxilia a leitura, mas não é enviado ao modelo.</p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
+    col_peso, col_altura = st.columns(2)
+
+    peso = col_peso.number_input(
+        "Peso (kg)",
+        min_value=0.0,
+        max_value=350.0,
+        value=0.0,
+        step=0.1,
+        format="%.1f",
+        help="Informe o peso atual em quilogramas.",
+    )
+
+    altura = col_altura.number_input(
+        "Altura (m)",
+        min_value=0.0,
+        max_value=2.50,
+        value=0.0,
+        step=0.01,
+        format="%.2f",
+        help="Informe a altura em metros. Exemplo: 1,65.",
+    )
+
+    imc = None
+
+    if peso > 0 and altura > 0:
+        imc = peso / (altura**2)
+        classificacao_imc, classe_visual_imc = classificar_imc(imc)
+        card_imc(imc, classificacao_imc, classe_visual_imc)
+    else:
+        placeholder_imc()
+
+resultado = None
 
 if enviar:
     dados_usuario = {
-        "Gender": SEXO[sexo_label],
-        "Age": idade,
-        "family_history": SIM_NAO[historico_label],
-        "FAVC": SIM_NAO[favc_label],
-        "FCVC": fcvc,
-        "NCP": ncp,
-        "CAEC": FREQUENCIA[caec_label],
-        "SMOKE": SIM_NAO[smoke_label],
-        "CH2O": ch2o,
-        "SCC": SIM_NAO[scc_label],
-        "FAF": faf,
-        "TUE": tue,
-        "CALC": FREQUENCIA[calc_label],
-        "MTRANS": TRANSPORTE[mtrans_label],
+        "Gender": SEXO[st.session_state.pred_sexo_label],
+        "Age": st.session_state.pred_idade,
+        "family_history": SIM_NAO[st.session_state.pred_historico_label],
+        "FAVC": SIM_NAO[st.session_state.pred_favc_label],
+        "FCVC": st.session_state.pred_fcvc,
+        "NCP": st.session_state.pred_ncp,
+        "CAEC": FREQUENCIA[st.session_state.pred_caec_label],
+        "SMOKE": SIM_NAO[st.session_state.pred_smoke_label],
+        "CH2O": st.session_state.pred_ch2o,
+        "SCC": SIM_NAO[st.session_state.pred_scc_label],
+        "FAF": st.session_state.pred_faf,
+        "TUE": st.session_state.pred_tue,
+        "CALC": FREQUENCIA[st.session_state.pred_calc_label],
+        "MTRANS": TRANSPORTE[st.session_state.pred_mtrans_label],
     }
 
     try:
@@ -259,6 +520,25 @@ if enviar:
         classe = resultado["classe"]
         confianca = resultado["confianca"]
 
+        with col_lateral:
+            st.markdown(
+                '<div class="prediction-side-title">Resultado da avaliação</div>',
+                unsafe_allow_html=True,
+            )
+            renderizar_resultado_lateral(classe, confianca, imc)
+
+            st.markdown(
+                (
+                    '<div class="prediction-summary-card">'
+                    '<strong>Leitura dos dados informados</strong>'
+                    f'<p>{html.escape(str(st.session_state.pred_sexo_label))} · {st.session_state.pred_idade} anos · '
+                    f'{html.escape(str(st.session_state.pred_historico_label))} para histórico familiar · '
+                    f'{html.escape(str(st.session_state.pred_mtrans_label))} como transporte principal.</p>'
+                    '</div>'
+                ),
+                unsafe_allow_html=True,
+            )
+
         st.success("Predição concluída com sucesso.")
 
         if imc is not None:
@@ -266,29 +546,6 @@ if enviar:
                 f"IMC complementar informado nesta avaliação: {imc:.2f} kg/m². "
                 "Esse valor não foi utilizado pelo modelo."
             )
-
-        c1, c2, c3 = st.columns(3)
-
-        c1.metric(
-            "Classificação estimada",
-            classe,
-        )
-
-        c2.metric(
-            "Confiança da classe",
-            f"{confianca:.1%}",
-        )
-
-        c3.metric(
-            "Faixa de confiança",
-            (
-                "Alta"
-                if confianca >= 0.75
-                else "Moderada"
-                if confianca >= 0.50
-                else "Baixa"
-            ),
-        )
 
         if "Obesidade" in classe:
             estilo = "risk-high"
@@ -324,10 +581,17 @@ if enviar:
 
         st.markdown(
             (
-                f'<div class="{estilo}">'
-                "<b>Interpretação para apoio ao cuidado</b><br>"
-                f"{interpretacao}"
-                "</div>"
+                f'<div class="clinical-interpretation-card {estilo}">'
+                '<div class="clinical-interpretation-icon" aria-hidden="true">'
+                '<svg viewBox="0 0 24 24"><path d="M9 11h6"></path>'
+                '<path d="M9 15h4"></path><path d="M10 3h4"></path>'
+                '<rect x="5" y="5" width="14" height="16" rx="2"></rect></svg>'
+                '</div>'
+                '<div class="clinical-interpretation-content">'
+                '<span>Interpretação clínica</span>'
+                '<h3>Apoio à priorização do cuidado</h3>'
+                f'<p>{html.escape(interpretacao)}</p>'
+                '</div></div>'
             ),
             unsafe_allow_html=True,
         )
@@ -375,13 +639,9 @@ if enviar:
                 "comportamentais semelhantes."
             )
 
-        with st.expander(
-            "Fatores gerais mais relevantes para o modelo"
-        ):
+        with st.expander("Fatores gerais mais relevantes para o modelo"):
             importancia = (
-                obter_importancia_global()
-                .head(10)
-                .sort_values("importancia")
+                obter_importancia_global().head(10).sort_values("importancia")
             )
 
             fig_imp = px.bar(
@@ -420,5 +680,31 @@ if enviar:
         with st.expander("Detalhes técnicos do erro"):
             st.code(str(erro))
 
+if not enviar:
+    with col_lateral:
+        st.markdown(
+            '<div class="prediction-side-title">Resultado da avaliação</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            """
+            <div class="prediction-placeholder-card">
+                <span class="prediction-placeholder-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 19V9"></path>
+                        <path d="M10 19V5"></path>
+                        <path d="M16 19v-7"></path>
+                        <path d="M22 19V3"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong>Resultado aguardando predição</strong>
+                    <p>Revise os dados, confirme o uso responsável e execute
+                    a análise para visualizar a classe estimada.</p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 rodape()
