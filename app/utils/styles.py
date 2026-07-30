@@ -112,10 +112,25 @@ def aplicar_estilos() -> None:
             right: 0.75rem;
         }
 
+        /* ======================================================
+           MENU LATERAL
+        ====================================================== */
+
         [data-testid="stSidebar"] {
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            box-shadow: 5px 0 18px rgba(11, 21, 56, 0.025);
+            background:
+                radial-gradient(
+                    circle at 18% 0%,
+                    rgba(0, 158, 142, 0.10),
+                    transparent 13rem
+                ),
+                linear-gradient(
+                    180deg,
+                    #FFFFFF 0%,
+                    #FBFDFD 58%,
+                    #F7FAFC 100%
+                );
+            border-right: 1px solid #E1E8EE;
+            box-shadow: 8px 0 28px rgba(11, 21, 56, 0.045);
         }
 
         [data-testid="stSidebar"] > div:first-child {
@@ -129,59 +144,154 @@ def aplicar_estilos() -> None:
         }
 
         [data-testid="stSidebarNav"] {
-            padding-top: 0.45rem;
+            padding-top: 0.5rem;
+        }
+
+        [data-testid="stSidebarNav"]::before {
+            content: "NAVEGAÇÃO";
+            display: block;
+            margin: 0.1rem 0.85rem 0.55rem;
+            color: #8A94A8;
+            font-size: 0.66rem;
+            font-weight: 780;
+            letter-spacing: 0.13em;
         }
 
         [data-testid="stSidebarNav"] ul {
-            gap: 0.28rem;
+            gap: 0.34rem;
+        }
+
+        [data-testid="stSidebarNav"] li {
+            position: relative;
         }
 
         [data-testid="stSidebarNav"] a {
-            min-height: 2.75rem;
-            border-radius: 11px;
+            position: relative;
+            min-height: 2.85rem;
+            padding: 0.55rem 0.75rem 0.55rem 2.75rem;
+            border: 1px solid transparent;
+            border-radius: 12px;
             color: var(--text);
-            font-weight: 580;
+            font-weight: 610;
+            transition:
+                background-color 150ms ease,
+                border-color 150ms ease,
+                color 150ms ease,
+                box-shadow 150ms ease,
+                transform 150ms ease;
+        }
+
+        [data-testid="stSidebarNav"] a::before {
+            position: absolute;
+            left: 0.72rem;
+            top: 50%;
+            width: 1.48rem;
+            height: 1.48rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(-50%);
+            border-radius: 8px;
+            background: #F1F5F7;
+            color: #53617A;
+            font-size: 0.86rem;
+            line-height: 1;
             transition:
                 background-color 150ms ease,
                 color 150ms ease,
                 transform 150ms ease;
         }
 
+        [data-testid="stSidebarNav"] li:nth-child(1) a::before {
+            content: "⌂";
+        }
+
+        [data-testid="stSidebarNav"] li:nth-child(2) a::before {
+            content: "◎";
+        }
+
+        [data-testid="stSidebarNav"] li:nth-child(3) a::before {
+            content: "▥";
+        }
+
+        [data-testid="stSidebarNav"] li:nth-child(4) a::before {
+            content: "✦";
+        }
+
+        [data-testid="stSidebarNav"] li:nth-child(5) a::before {
+            content: "◈";
+        }
+
+        [data-testid="stSidebarNav"] li:nth-child(6) a::before {
+            content: "♙";
+        }
+
         [data-testid="stSidebarNav"] a:hover {
-            background: #F0F7F6;
+            background: rgba(255, 255, 255, 0.82);
+            border-color: #DDE9E7;
             color: var(--primary-dark);
+            box-shadow: 0 5px 14px rgba(11, 21, 56, 0.045);
             transform: translateX(2px);
         }
 
-        [data-testid="stSidebarNav"] a[aria-current="page"] {
+        [data-testid="stSidebarNav"] a:hover::before {
             background: var(--primary-soft);
             color: var(--primary-dark);
-            font-weight: 700;
+            transform: translateY(-50%) scale(1.03);
         }
 
-        [data-testid="stSidebarNav"] a[aria-current="page"] svg {
-            color: var(--primary);
+        [data-testid="stSidebarNav"] a[aria-current="page"] {
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0, 158, 142, 0.14),
+                    rgba(0, 158, 142, 0.07)
+                );
+            border-color: rgba(0, 158, 142, 0.18);
+            color: var(--primary-dark);
+            box-shadow: inset 3px 0 0 var(--primary);
+            font-weight: 720;
+        }
+
+        [data-testid="stSidebarNav"] a[aria-current="page"]::before {
+            background: var(--primary);
+            color: #FFFFFF;
+            box-shadow: 0 4px 10px rgba(0, 158, 142, 0.22);
+        }
+
+        [data-testid="stSidebarNav"] a svg {
+            display: none;
         }
 
         [data-testid="stSidebar"] [data-testid="stAlert"] {
+            margin-top: 0.25rem;
+            border: 1px solid #DCEBE8;
+            border-radius: 13px;
+            background: rgba(239, 249, 247, 0.88);
             box-shadow: none;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stAlert"] p {
+            color: #40516A;
+            font-size: 0.79rem;
+            line-height: 1.5;
         }
 
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 11px;
-            padding: 0.15rem 0.15rem 0.25rem 0.15rem;
+            gap: 12px;
+            padding: 0.2rem 0.15rem 0.35rem;
         }
 
         .sidebar-brand-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 0 0 39px;
-            width: 39px;
-            height: 39px;
-            border-radius: 11px;
+            flex: 0 0 43px;
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
             background:
                 linear-gradient(
                     145deg,
@@ -189,22 +299,22 @@ def aplicar_estilos() -> None:
                     var(--primary)
                 );
             color: #FFFFFF;
-            box-shadow: 0 5px 13px rgba(0, 158, 142, 0.18);
+            box-shadow: 0 7px 17px rgba(0, 158, 142, 0.22);
         }
 
         .sidebar-brand-name {
             color: var(--navy);
-            font-size: 0.99rem;
-            font-weight: 760;
-            letter-spacing: -0.02em;
-            line-height: 1.15;
+            font-size: 1rem;
+            font-weight: 780;
+            letter-spacing: -0.025em;
+            line-height: 1.12;
         }
 
         .sidebar-brand-subtitle {
-            margin-top: 3px;
+            margin-top: 4px;
             color: var(--muted);
-            font-size: 0.71rem;
-            font-weight: 550;
+            font-size: 0.7rem;
+            font-weight: 570;
             line-height: 1.25;
         }
 
