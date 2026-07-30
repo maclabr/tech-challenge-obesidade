@@ -818,6 +818,142 @@ def aplicar_estilos() -> None:
             line-height: 1.7;
         }
 
+
+        /* Cards de KPI do dashboard */
+        .kpi-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 156px;
+            height: 100%;
+            overflow: hidden;
+            padding: 19px 18px 17px;
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            transition:
+                transform 170ms ease,
+                border-color 170ms ease,
+                box-shadow 170ms ease;
+        }
+
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: var(--kpi-accent, var(--primary));
+        }
+
+        .kpi-card-blue {
+            --kpi-accent: #1769E8;
+        }
+
+        .kpi-card-orange {
+            --kpi-accent: #D9820B;
+        }
+
+        .kpi-card-purple {
+            --kpi-accent: #8750C7;
+        }
+
+        .kpi-card-rose {
+            --kpi-accent: #C94A64;
+        }
+
+        .kpi-card-green {
+            --kpi-accent: #008F7F;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: #CFE3E0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card-header {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 12px;
+        }
+
+        .kpi-card-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 38px;
+            width: 38px;
+            height: 38px;
+            border: 1px solid transparent;
+            border-radius: 11px;
+            line-height: 1;
+        }
+
+        .kpi-card-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .kpi-icon-blue {
+            color: #1769E8;
+            background: rgba(23, 105, 232, 0.10);
+            border-color: rgba(23, 105, 232, 0.16);
+        }
+
+        .kpi-icon-orange {
+            color: #D9820B;
+            background: rgba(231, 154, 24, 0.12);
+            border-color: rgba(231, 154, 24, 0.18);
+        }
+
+        .kpi-icon-purple {
+            color: #8750C7;
+            background: rgba(135, 80, 199, 0.11);
+            border-color: rgba(135, 80, 199, 0.17);
+        }
+
+        .kpi-icon-rose {
+            color: #C94A64;
+            background: rgba(201, 74, 100, 0.10);
+            border-color: rgba(201, 74, 100, 0.16);
+        }
+
+        .kpi-icon-green {
+            color: #008F7F;
+            background: rgba(0, 158, 142, 0.11);
+            border-color: rgba(0, 158, 142, 0.17);
+        }
+
+        .kpi-card-title {
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 690;
+            line-height: 1.25;
+        }
+
+        .kpi-card-value {
+            margin: auto 0 5px;
+            color: var(--navy);
+            font-size: clamp(1.48rem, 2vw, 1.88rem);
+            font-weight: 780;
+            letter-spacing: -0.04em;
+            line-height: 1.08;
+        }
+
+        .kpi-card-subtitle {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 520;
+            line-height: 1.35;
+        }
+
         [data-testid="stTabs"] [data-baseweb="tab-list"] {
             gap: 1.1rem;
             border-bottom: 1px solid var(--border);
@@ -934,6 +1070,43 @@ def aplicar_estilos() -> None:
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-sm);
+        }
+
+        /* Dashboard — gráficos e containers analíticos */
+
+        [data-testid="stTabs"] {
+            margin-top: 1.35rem;
+        }
+
+        [data-testid="stTabs"] [data-testid="stVerticalBlockBorderWrapper"] {
+            height: 100%;
+            padding: 0.35rem 0.45rem 0.15rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        [data-testid="stTabs"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
+            border-color: #D5E7E4;
+            box-shadow: var(--shadow-md);
+        }
+
+        [data-testid="stPlotlyChart"] {
+            overflow: hidden;
+            border-radius: 13px;
+        }
+
+        .dashboard-note {
+            margin: 0.7rem 0 0.15rem;
+            padding: 0.8rem 0.95rem;
+            background: #F6FAFA;
+            border: 1px solid #E2EFED;
+            border-radius: 11px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.55;
         }
 
         .insight {
@@ -1246,6 +1419,131 @@ def aplicar_estilos() -> None:
         }
         </style>
         """,
+        unsafe_allow_html=True,
+    )
+
+
+def configurar_grafico(figura, altura: int = 430, legenda_horizontal: bool = False):
+    """Padroniza gráficos Plotly com a identidade visual da aplicação."""
+
+    layout_legenda = dict(
+        title_text="",
+        font=dict(size=12, color="#66728F"),
+        bgcolor="rgba(0,0,0,0)",
+    )
+    if legenda_horizontal:
+        layout_legenda.update(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+        )
+
+    figura.update_layout(
+        height=altura,
+        margin=dict(l=18, r=18, t=62, b=24),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter, Segoe UI, sans-serif", color="#253252", size=12),
+        title=dict(
+            x=0,
+            xanchor="left",
+            font=dict(size=17, color="#0B1538", family="Inter, Segoe UI, sans-serif"),
+        ),
+        legend=layout_legenda,
+        hoverlabel=dict(
+            bgcolor="#0B1538",
+            bordercolor="#0B1538",
+            font=dict(color="#FFFFFF", family="Inter, Segoe UI, sans-serif"),
+        ),
+    )
+    figura.update_xaxes(
+        showgrid=False,
+        zeroline=False,
+        linecolor="#E5EAF1",
+        tickfont=dict(color="#66728F", size=11),
+        title_font=dict(color="#66728F", size=12),
+    )
+    figura.update_yaxes(
+        gridcolor="#EDF1F5",
+        griddash="dot",
+        zeroline=False,
+        linecolor="#E5EAF1",
+        tickfont=dict(color="#66728F", size=11),
+        title_font=dict(color="#66728F", size=12),
+    )
+    return figura
+
+
+def card_kpi(
+    coluna,
+    icone: str,
+    cor: str,
+    titulo: str,
+    valor: str,
+    subtitulo: str,
+) -> None:
+    """Exibe um indicador em um card visual reutilizável."""
+
+    icones = {
+        "pacientes": (
+            '<svg viewBox="0 0 24 24" aria-hidden="true">'
+            '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>'
+            '<circle cx="9" cy="7" r="4"/>'
+            '<path d="M22 21v-2a4 4 0 0 0-3-3.87"/>'
+            '<path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
+            '</svg>'
+        ),
+        "idade_media": (
+            '<svg viewBox="0 0 24 24" aria-hidden="true">'
+            '<path d="M3 3v18h18"/>'
+            '<path d="m7 16 4-5 3 3 5-7"/>'
+            '<path d="M19 7h-4"/>'
+            '<path d="M19 7v4"/>'
+            '</svg>'
+        ),
+        "idade_predominante": (
+            '<svg viewBox="0 0 24 24" aria-hidden="true">'
+            '<circle cx="12" cy="12" r="9"/>'
+            '<circle cx="12" cy="12" r="5"/>'
+            '<circle cx="12" cy="12" r="1.5"/>'
+            '</svg>'
+        ),
+        "historico_familiar": (
+            '<svg viewBox="0 0 24 24" aria-hidden="true">'
+            '<path d="M12 21s-7-4.35-9.33-8.28C.84 9.63 2.12 6 5.73 5.23 8 4.74 10 6 12 8c2-2 4-3.26 6.27-2.77 3.61.77 4.89 4.4 3.06 7.49C19 16.65 12 21 12 21Z"/>'
+            '<path d="M8.5 12h2l1-2 1.5 4 1-2h2"/>'
+            '</svg>'
+        ),
+        "transporte_ativo": (
+            '<svg viewBox="0 0 24 24" aria-hidden="true">'
+            '<circle cx="12" cy="4" r="2"/>'
+            '<path d="m10 22 1-7-3-3 2-4 4 3 3 1"/>'
+            '<path d="m14 22-2-6"/>'
+            '<path d="m6 22 2-6"/>'
+            '</svg>'
+        ),
+    }
+    cores_permitidas = {"blue", "orange", "purple", "rose", "green"}
+
+    titulo_seguro = html.escape(str(titulo))
+    valor_seguro = html.escape(str(valor))
+    subtitulo_seguro = html.escape(str(subtitulo))
+    icone_svg = icones.get(icone, icones["pacientes"])
+    cor_segura = cor if cor in cores_permitidas else "green"
+
+    coluna.markdown(
+        (
+            f'<div class="kpi-card kpi-card-{cor_segura}">'
+            '<div class="kpi-card-header">'
+            f'<span class="kpi-card-icon kpi-icon-{cor_segura}">{icone_svg}</span>'
+            f'<span class="kpi-card-title">{titulo_seguro}</span>'
+            '</div>'
+            f'<div class="kpi-card-value">{valor_seguro}</div>'
+            f'<div class="kpi-card-subtitle">{subtitulo_seguro}</div>'
+            '</div>'
+        ),
         unsafe_allow_html=True,
     )
 
