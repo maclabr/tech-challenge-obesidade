@@ -38,6 +38,7 @@ def renderizar_html(conteudo: str) -> None:
     )
 
 
+@st.cache_data
 def carregar_imagem_base64(caminho: Path) -> str:
     """Converte uma imagem local para exibição segura dentro do HTML."""
 
@@ -62,9 +63,16 @@ CAMINHO_IMAGEM_HERO = (
     / "hero_obesity_analytics.png"
 )
 
-IMAGEM_HERO_BASE64 = carregar_imagem_base64(
-    CAMINHO_IMAGEM_HERO
-)
+try:
+    IMAGEM_HERO_BASE64 = carregar_imagem_base64(
+        CAMINHO_IMAGEM_HERO
+    )
+except FileNotFoundError:
+    IMAGEM_HERO_BASE64 = ""
+    st.warning(
+        "Imagem de destaque não encontrada. A página será exibida sem "
+        "a ilustração principal."
+    )
 
 
 # =========================================================

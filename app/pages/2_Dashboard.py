@@ -81,10 +81,10 @@ with abas[3]:
     pct_ativo = filtrado.fl_transporte_ativo.mean()
     media_atividade = filtrado.cd_frequencia_atividade_fisica.mean()
     insights=[
-        f"A classe mais frequente no recorte é **{maior['rotulo']}**, com **{int(maior['pacientes'])} pacientes**.",
-        f"**{filtrado.fl_historico_familiar_sobrepeso.mean():.1%}** dos registros possuem histórico familiar de sobrepeso.",
-        f"**{pct_favc:.1%}** relatam consumo frequente de alimentos muito calóricos.",
-        f"A média de atividade física é **{media_atividade:.2f}** na escala de 0 a 3, enquanto **{pct_ativo:.1%}** utilizam caminhada ou bicicleta como transporte habitual.",
+        f"A classe mais frequente no recorte é {maior['rotulo']}, com {int(maior['pacientes'])} pacientes.",
+        f"{filtrado.fl_historico_familiar_sobrepeso.mean():.1%} dos registros possuem histórico familiar de sobrepeso.",
+        f"{pct_favc:.1%} relatam consumo frequente de alimentos muito calóricos.",
+        f"A média de atividade física é {media_atividade:.2f} na escala de 0 a 3, enquanto {pct_ativo:.1%} utilizam caminhada ou bicicleta como transporte habitual.",
     ]
     for texto in insights: st.markdown(f'<div class="insight">{texto}</div>',unsafe_allow_html=True)
     st.caption("Insights descritivos calculados dinamicamente sobre o recorte filtrado; não representam causalidade.")
