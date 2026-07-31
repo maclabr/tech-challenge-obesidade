@@ -2160,6 +2160,152 @@ def aplicar_estilos() -> None:
             color: #B83F3F;
         }
 
+
+        /* Predição — fluxo vertical contínuo */
+        .prediction-main-heading {
+            margin-top: 0.2rem;
+            margin-bottom: 1rem;
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            border-color: #E2E8F0;
+            border-radius: 15px;
+            box-shadow: 0 5px 18px rgba(11, 21, 56, 0.045);
+        }
+
+        .prediction-flow-section {
+            margin: -0.15rem 0 0.95rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #E8EDF3;
+        }
+
+        .prediction-flow-heading {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .prediction-flow-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 29px;
+            width: 29px;
+            height: 29px;
+            color: #FFFFFF;
+            background: var(--section-accent);
+            border-radius: 50%;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .prediction-flow-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 38px;
+            width: 38px;
+            height: 38px;
+            color: var(--section-accent);
+            background: color-mix(in srgb, var(--section-accent) 11%, white);
+            border-radius: 10px;
+        }
+
+        .prediction-flow-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.85;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .prediction-flow-heading h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1rem;
+            font-weight: 770;
+        }
+
+        .prediction-flow-heading p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 0.76rem;
+            line-height: 1.45;
+        }
+
+        .prediction-complement-note {
+            margin-top: 0.65rem;
+            padding: 12px 14px;
+            background: #F4F8FD;
+            border: 1px solid #DDE8F3;
+            border-radius: 11px;
+        }
+
+        .prediction-complement-note strong {
+            color: var(--navy);
+            font-size: 0.76rem;
+        }
+
+        .prediction-complement-note p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.73rem;
+            line-height: 1.52;
+        }
+
+        .prediction-review-heading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 1.25rem 0 0.45rem;
+            text-align: center;
+        }
+
+        .prediction-review-heading strong {
+            color: var(--navy);
+            font-size: 0.92rem;
+        }
+
+        .prediction-review-heading span {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 0.76rem;
+        }
+
+        .prediction-result-divider {
+            height: 1px;
+            margin: 1.8rem 0 1.35rem;
+            background: linear-gradient(90deg, transparent, #D7DFE9 16%, #D7DFE9 84%, transparent);
+        }
+
+        .prediction-result-heading {
+            margin-bottom: 0.85rem;
+        }
+
+        .prediction-placeholder-wide {
+            min-height: auto;
+            margin-top: 0;
+            padding: 19px 20px;
+            background: #FBFCFE;
+        }
+
+        .prediction-summary-main {
+            margin-top: 0.65rem;
+            min-height: 146px;
+        }
+
+        @media (max-width: 760px) {
+            .prediction-flow-heading {
+                align-items: flex-start;
+            }
+
+            .prediction-flow-number {
+                margin-top: 4px;
+            }
+        }
+
         @media (max-width: 640px) {
             .prediction-result-card {
                 padding: 21px 16px 17px;
