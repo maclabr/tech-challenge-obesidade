@@ -5,6 +5,25 @@ from utils.constants import CORES_NIVEIS, ORDEM_NIVEIS, ROTULOS_NIVEIS
 from utils.data_loader import carregar_dados_dashboard
 from utils.styles import aplicar_estilos, card_kpi, configurar_grafico, hero, rodape
 
+
+def adicionar_subtitulo(figura, texto: str) -> None:
+    """Posiciona o subtítulo imediatamente abaixo do título do gráfico."""
+    titulo_atual = figura.layout.title.text or ""
+    figura.update_layout(
+        title={
+            "text": (
+                f"{titulo_atual}<br>"
+                f"<span style='font-size:12px;color:#66728F;font-weight:400'>"
+                f"{texto}</span>"
+            ),
+            "x": 0,
+            "xanchor": "left",
+            "yanchor": "top",
+            "pad": {"b": 8},
+        }
+    )
+
+
 aplicar_estilos()
 hero(
     "Dashboard analítico",
@@ -18,30 +37,99 @@ except Exception as erro:
     st.error(f"Não foi possível carregar a base analítica: {erro}")
     st.stop()
 
+idade_minima = int(dados.nr_idade.min())
+idade_maxima = int(dados.nr_idade.max())
+
+
+def restaurar_filtros() -> None:
+    """Retorna todos os filtros do dashboard ao estado inicial."""
+    st.session_state["dashboard_nivel"] = "Todos"
+    st.session_state["dashboard_sexo"] = "Todos"
+    st.session_state["dashboard_faixa_idade"] = (idade_minima, idade_maxima)
+
+
 with st.sidebar:
     st.markdown("### Filtros do dashboard")
-    niveis = st.multiselect(
-        "Nível de obesidade", ORDEM_NIVEIS, default=ORDEM_NIVEIS,
-        format_func=lambda x: ROTULOS_NIVEIS[x],
+    st.caption("Selecione os critérios para personalizar a análise.")
+
+    st.markdown(
+        "<div style='font-size:0.74rem;font-weight:700;letter-spacing:0.08em;"
+        "color:#66728F;margin:0.9rem 0 0.45rem;'>PERFIL DOS PACIENTES</div>",
+        unsafe_allow_html=True,
     )
-    generos_disponiveis = sorted(dados["ds_genero"].unique())
-    generos = st.multiselect(
-        "Sexo", generos_disponiveis, default=generos_disponiveis,
-        format_func=lambda x: "Feminino" if x == "Female" else "Masculino",
+
+    nivel_selecionado = st.selectbox(
+        "Nível de obesidade",
+        ["Todos", *ORDEM_NIVEIS],
+        key="dashboard_nivel",
+        format_func=lambda x: (
+            "Todos os níveis" if x == "Todos" else ROTULOS_NIVEIS[x]
+        ),
+        help="Escolha um nível específico ou mantenha todos os pacientes.",
     )
-    idade_minima = int(dados.nr_idade.min())
-    idade_maxima = int(dados.nr_idade.max())
+
+    sexo_selecionado = st.selectbox(
+        "Sexo",
+        ["Todos", "Feminino", "Masculino"],
+        key="dashboard_sexo",
+        help="Escolha um sexo específico ou mantenha todos os pacientes.",
+    )
+
     faixa_idade = st.slider(
-        "Faixa etária", idade_minima, idade_maxima,
+        "Faixa etária",
+        idade_minima,
+        idade_maxima,
         (idade_minima, idade_maxima),
+        key="dashboard_faixa_idade",
+        format="%d anos",
+        help="Ajuste a idade mínima e máxima dos pacientes analisados.",
+    )
+
+    mapa_sexo = {
+        "Todos": ["Female", "Male"],
+        "Feminino": ["Female"],
+        "Masculino": ["Male"],
+    }
+    generos = mapa_sexo[sexo_selecionado]
+    niveis = (
+        ORDEM_NIVEIS
+        if nivel_selecionado == "Todos"
+        else [nivel_selecionado]
+    )
+
+    filtrado = dados[
+        dados.ds_nivel_obesidade.isin(niveis)
+        & dados.ds_genero.isin(generos)
+        & dados.nr_idade.between(*faixa_idade)
+    ].copy()
+
+    st.markdown(
+        "<div style='font-size:0.74rem;font-weight:700;letter-spacing:0.08em;"
+        "color:#66728F;margin:1.2rem 0 0.45rem;'>PERFIL SELECIONADO</div>",
+        unsafe_allow_html=True,
+    )
+
+    quantidade = len(filtrado)
+    termo = "paciente encontrado" if quantidade == 1 else "pacientes encontrados"
+    st.markdown(
+        f"<div style='padding:0.85rem 0.9rem;border:1px solid #E4EAF2;"
+        f"border-radius:12px;background:#F8FAFC;'>"
+        f"<div style='font-size:1rem;font-weight:700;color:#253252;'>"
+        f"{quantidade:,.0f} {termo}</div>"
+        f"<div style='font-size:0.82rem;color:#66728F;margin-top:0.25rem;'>"
+        f"Nível: {'Todos os níveis' if nivel_selecionado == 'Todos' else ROTULOS_NIVEIS[nivel_selecionado]}</div>"
+        f"<div style='font-size:0.82rem;color:#66728F;margin-top:0.18rem;'>"
+        f"Faixa etária: {faixa_idade[0]} a {faixa_idade[1]} anos</div>"
+        f"</div>".replace(",", "."),
+        unsafe_allow_html=True,
+    )
+
+    st.button(
+        "↻ Restaurar filtros",
+        use_container_width=True,
+        on_click=restaurar_filtros,
     )
     st.caption("Os KPIs e gráficos são atualizados automaticamente.")
-
-filtrado = dados[
-    dados.ds_nivel_obesidade.isin(niveis)
-    & dados.ds_genero.isin(generos)
-    & dados.nr_idade.between(*faixa_idade)
-].copy()
 
 if filtrado.empty:
     st.warning("Nenhum registro corresponde aos filtros selecionados.")
@@ -67,6 +155,11 @@ with abas[0]:
     fig.update_traces(textposition="outside", texttemplate="<b>%{text}</b>", textfont=dict(family="Arial Black, Inter, sans-serif", size=12), cliponaxis=False, hovertemplate="%{y}<br><b>%{x} pacientes</b><extra></extra>")
     fig.update_layout(showlegend=False, yaxis_title="", xaxis_title="Pacientes", bargap=0.28)
     configurar_grafico(fig, 430)
+    adicionar_subtitulo(
+        fig,
+        "Quantidade de pacientes em cada nível de obesidade presente na base de dados.",
+    )
+    fig.update_layout(margin=dict(l=18, r=18, t=88, b=55))
     with c1:
         with st.container(border=True):
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -77,6 +170,10 @@ with abas[0]:
     fig2.update_traces(textposition="outside", texttemplate="<b>%{text}</b>", textfont=dict(family="Arial Black, Inter, sans-serif", size=11), cliponaxis=False, hovertemplate="%{x}<br>%{fullData.name}: <b>%{y}</b><extra></extra>")
     fig2.update_layout(xaxis_title="", yaxis_title="Pacientes", xaxis_tickangle=-30, bargap=0.24, bargroupgap=0.08)
     configurar_grafico(fig2, 430)
+    adicionar_subtitulo(
+        fig2,
+        "Comparação da quantidade de pacientes por sexo em cada classificação de obesidade.",
+    )
     fig2.update_layout(
         legend=dict(
             orientation="h",
@@ -88,7 +185,7 @@ with abas[0]:
             font=dict(size=11, color="#66728F"),
             bgcolor="rgba(0,0,0,0)",
         ),
-        margin=dict(l=18, r=18, t=62, b=95),
+        margin=dict(l=18, r=18, t=88, b=95),
     )
     with c2:
         with st.container(border=True):
@@ -105,6 +202,10 @@ with abas[1]:
     fig.update_traces(textposition="outside", texttemplate="<b>%{text:.2f}</b>", textfont=dict(family="Arial Black, Inter, sans-serif", size=10), cliponaxis=False, hovertemplate="%{x}<br>%{fullData.name}: <b>%{y:.2f}</b><extra></extra>")
     fig.update_layout(xaxis_title="", yaxis_title="Média da escala", xaxis_tickangle=-30, bargap=0.22, bargroupgap=0.07)
     configurar_grafico(fig, 470)
+    adicionar_subtitulo(
+        fig,
+        "Comparação das médias de consumo de vegetais, atividade física e água por nível de obesidade.",
+    )
     fig.update_layout(
         legend=dict(
             orientation="h",
@@ -116,7 +217,7 @@ with abas[1]:
             font=dict(size=11, color="#66728F"),
             bgcolor="rgba(0,0,0,0)",
         ),
-        margin=dict(l=18, r=18, t=62, b=105),
+        margin=dict(l=18, r=18, t=88, b=105),
     )
     with c1:
         with st.container(border=True):
@@ -129,6 +230,11 @@ with abas[1]:
     fig2 = px.pie(transporte, names="transporte", values="pacientes", title="Meio de transporte habitual", hole=0.58, color_discrete_sequence=["#12A995", "#1769E8", "#F0A33A", "#9650E6", "#5BBD77"])
     fig2.update_traces(textposition="inside", textinfo="percent", textfont=dict(family="Arial Black, Inter, sans-serif", size=12), marker=dict(line=dict(color="#FFFFFF", width=3)), hovertemplate="%{label}<br><b>%{value} pacientes</b> · %{percent}<extra></extra>")
     configurar_grafico(fig2, 450)
+    adicionar_subtitulo(
+        fig2,
+        "Quantidade e proporção de pacientes segundo o meio de transporte utilizado habitualmente.",
+    )
+    fig2.update_layout(margin=dict(l=18, r=18, t=88, b=40))
     with c2:
         with st.container(border=True):
             st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
@@ -140,6 +246,11 @@ with abas[2]:
     fig.update_traces(showlegend=False, line_width=1.5, hovertemplate="%{x}<br>Idade: <b>%{y:.1f} anos</b><extra></extra>")
     fig.update_layout(showlegend=False, xaxis_title="", yaxis_title="Idade", xaxis_tickangle=-30)
     configurar_grafico(fig, 440)
+    adicionar_subtitulo(
+        fig,
+        "Variação da idade dos pacientes em cada classificação de obesidade.",
+    )
+    fig.update_layout(margin=dict(l=18, r=18, t=88, b=70))
     with c1:
         with st.container(border=True):
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -150,6 +261,11 @@ with abas[2]:
     fig2.update_traces(line=dict(color="#009E8E", width=3), marker=dict(size=9, color="#FFFFFF", line=dict(color="#009E8E", width=3)), texttemplate="<b>%{text:.1f}</b>", textposition="top center", textfont=dict(family="Arial Black, Inter, sans-serif", size=11, color="#253252"), hovertemplate="%{x}<br>IMC médio: <b>%{y:.2f}</b><extra></extra>")
     fig2.update_layout(xaxis_title="", yaxis_title="IMC médio", xaxis_tickangle=-30)
     configurar_grafico(fig2, 440)
+    adicionar_subtitulo(
+        fig2,
+        "Valor médio do Índice de Massa Corporal em cada nível de obesidade.",
+    )
+    fig2.update_layout(margin=dict(l=18, r=18, t=88, b=70))
     with c2:
         with st.container(border=True):
             st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
