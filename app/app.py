@@ -13,8 +13,7 @@ from utils.styles import aplicar_estilos, rodape
 
 st.set_page_config(
     page_title="Obesity Care Analytics",
-    page_icon="🏥",
-    layout="wide",
+        layout="wide",
     initial_sidebar_state="expanded",
 )
 
