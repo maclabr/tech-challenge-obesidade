@@ -1,6 +1,6 @@
 """Utilitários de interpretabilidade compatíveis com a pipeline treinada."""
 import pandas as pd
-from utils.model_loader import carregar_modelo
+from utils.model_loader import carregar_modelo, obter_pipelines_base
 
 TRADUCAO_FEATURES = {
     "nr_idade":"Idade", "fl_historico_familiar_sobrepeso":"Histórico familiar",
@@ -22,11 +22,25 @@ def _nome_base(nome_transformado: str) -> str:
     return limpo.replace("_", " ").title()
 
 def obter_importancia_global() -> pd.DataFrame:
-    pipeline = carregar_modelo()
-    preprocessador = pipeline.named_steps["preprocessador"]
-    modelo = pipeline.named_steps["modelo"]
-    nomes = preprocessador.get_feature_names_out()
-    tabela = pd.DataFrame({"variavel_transformada": nomes, "importancia": modelo.feature_importances_})
+    pipelines_base = obter_pipelines_base(carregar_modelo())
+
+    # Quando o modelo carregado é um CalibratedClassifierCV, existe um
+    # Random Forest por fold de validação cruzada interna, cada um treinado
+    # em ~80% dos dados de treino. Categorias raras (ex.: consumo de álcool
+    # "Always") podem não aparecer em algum fold, gerando uma coluna a menos
+    # após o OneHotEncoder — por isso a média é feita alinhando por NOME da
+    # variável transformada (não por posição), preenchendo com 0 a
+    # importância nos folds em que a categoria não existiu.
+    series_por_fold = []
+    for pipeline in pipelines_base:
+        preprocessador = pipeline.named_steps["preprocessador"]
+        modelo = pipeline.named_steps["modelo"]
+        nomes = preprocessador.get_feature_names_out()
+        series_por_fold.append(pd.Series(modelo.feature_importances_, index=nomes))
+
+    importancias = pd.concat(series_por_fold, axis=1).fillna(0).mean(axis=1)
+
+    tabela = importancias.rename("importancia").rename_axis("variavel_transformada").reset_index()
     tabela["variavel"] = tabela["variavel_transformada"].map(_nome_base)
     return (tabela.groupby("variavel", as_index=False)["importancia"].sum()
             .sort_values("importancia", ascending=False).reset_index(drop=True))

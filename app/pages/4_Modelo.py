@@ -7,13 +7,13 @@ import plotly.express as px
 import streamlit as st
 
 from utils.explainability import obter_importancia_global
-from utils.model_loader import carregar_modelo
+from utils.model_loader import carregar_modelo, obter_pipelines_base
 from utils.styles import aplicar_estilos, hero, rodape
 
 
 METRICAS_MODELO = {
     "accuracy_cv": 0.7963,
-    "accuracy_teste": 0.7943,
+    "accuracy_teste": 0.8038,
     "f1_macro_cv": 0.7891,
     "meta": 0.75,
 }
@@ -32,6 +32,12 @@ def renderizar_html(conteudo: str) -> None:
     )
     html_limpo = re.sub(r">\s+<", "><", html_limpo)
     st.markdown(html_limpo, unsafe_allow_html=True)
+
+
+def formatar_percentual(valor: float) -> str:
+    """Formata uma fração como percentual no padrão brasileiro (vírgula)."""
+
+    return f"{valor:.1%}".replace(".", ",")
 
 
 st.markdown(
@@ -619,7 +625,7 @@ hero(
 )
 
 renderizar_html(
-    """
+    f"""
     <div class="model-page">
         <section class="model-kpi-grid">
             <article class="model-kpi" style="--accent:#3157C8;--icon-bg:#EEF3FF;">
@@ -629,7 +635,7 @@ renderizar_html(
                         <svg viewBox="0 0 24 24"><path d="M4 19V9"></path><path d="M10 19V5"></path><path d="M16 19v-7"></path><path d="M22 19V3"></path></svg>
                     </div>
                 </div>
-                <strong class="model-kpi-value">79,6%</strong>
+                <strong class="model-kpi-value">{formatar_percentual(METRICAS_MODELO['accuracy_cv'])}</strong>
                 <span class="model-kpi-note">Média obtida na validação cruzada.</span>
             </article>
 
@@ -640,7 +646,7 @@ renderizar_html(
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="m9 12 2 2 4-5"></path></svg>
                     </div>
                 </div>
-                <strong class="model-kpi-value">79,4%</strong>
+                <strong class="model-kpi-value">{formatar_percentual(METRICAS_MODELO['accuracy_teste'])}</strong>
                 <span class="model-kpi-note">Desempenho no conjunto de teste.</span>
             </article>
 
@@ -651,7 +657,7 @@ renderizar_html(
                         <svg viewBox="0 0 24 24"><path d="M5 18 10 13l3 3 6-8"></path><path d="M15 8h4v4"></path></svg>
                     </div>
                 </div>
-                <strong class="model-kpi-value">78,9%</strong>
+                <strong class="model-kpi-value">{formatar_percentual(METRICAS_MODELO['f1_macro_cv'])}</strong>
                 <span class="model-kpi-note">Equilíbrio médio entre as classes.</span>
             </article>
 
@@ -662,7 +668,7 @@ renderizar_html(
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 4V2"></path></svg>
                     </div>
                 </div>
-                <strong class="model-kpi-value">75,0%</strong>
+                <strong class="model-kpi-value">{formatar_percentual(METRICAS_MODELO['meta'])}</strong>
                 <span class="model-kpi-note">Meta de desempenho atingida.</span>
             </article>
         </section>
@@ -729,7 +735,7 @@ renderizar_html(
 
 try:
     pipeline = carregar_modelo()
-    modelo = pipeline.named_steps["modelo"]
+    modelo = obter_pipelines_base(pipeline)[0].named_steps["modelo"]
 
     renderizar_html(
         f"""
@@ -857,8 +863,10 @@ renderizar_html(
             <div>
                 <strong>Pipeline integrada</strong>
                 <p>
-                    O arquivo joblib reúne pré-processamento e modelo, reduzindo
-                    o risco de inconsistência entre treinamento e predição.
+                    O arquivo joblib reúne pré-processamento, modelo e uma camada
+                    de calibração de probabilidade (sigmoid), reduzindo o risco de
+                    inconsistência entre treinamento e predição e tornando a
+                    confiança exibida ao usuário mais realista.
                 </p>
             </div>
         </aside>
