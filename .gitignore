@@ -221,4 +221,4 @@ __marimo__/
 .DS_Store
 
 # Streamlit agent skills
-.agents/
+.agents/CLAUDE.md
